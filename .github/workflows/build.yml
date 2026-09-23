@@ -28,4 +28,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: quan-ly-phong-windows
-          path: dist/quan_ly_phong.exe
+          path: dist/quan-ly-phong.exe
