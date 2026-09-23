@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Lay source code
+        uses: actions/checkout@v4
+
+      - name: Cai Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cai PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build
+        run: pyinstaller --onefile --windowed main.py
+
+      - name: Luu file thuc thi
+        uses: actions/upload-artifact@v4
+        with:
+          name: quan-ly-phong-windows
+          path: dist/quan_ly_phong.exe
