@@ -7,14 +7,20 @@ conn=sqlite3.connect("data.db")
 cursor=conn.cursor()
 
 cursor.execute("""
+    DROP TABLE thongtinmuonphong
+""")
+
+cursor.execute("""
     CREATE TABLE IF NOT EXISTS thongtinmuonphong(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         hoten TEXT NOT NULL,
         mssv TEXT NOT NULL,
-        thoigianbd TEXT,
-        thoigiankt TEXT,
+        ngay TEXT,
+        giobd TEXT,
+        giokt TEXT,
         trangthai TEXT
     )
+
 """)
 
 root=Tk()
@@ -70,10 +76,8 @@ lblHoTenDS=Label(root,text="Họ và tên")
 lblHoTenDS.grid(row=7,column=1)
 lblMSSVDS=Label(root,text="MSSV")
 lblMSSVDS.grid(row=7,column=2)
-lblThoiGianBDDS=Label(root,text="Bắt đầu")
-lblThoiGianBDDS.grid(row=7,column=3)
-lblThoiGianKTDS=Label(root,text="Kết thúc")
-lblThoiGianKTDS.grid(row=7,column=4)
+lblThoiGianDS=Label(root,text="Thời gian")
+lblThoiGianDS.grid(row=7,column=3)
 lblTrangThaiDS=Label(root,text="Trạng thái")
 lblTrangThaiDS.grid(row=7,column=5)
 
