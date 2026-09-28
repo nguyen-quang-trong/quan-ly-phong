@@ -1,9 +1,9 @@
-import sqlite3
-from tkinter import *
-from tkinter.ttk import *
-from datetime import datetime
-from tkcalendar import DateEntry
 import os
+import sqlite3
+
+from tkinter import Tk, Frame, Label, Entry, Button, Spinbox
+from tkinter.ttk import Treeview
+from tkcalendar import DateEntry
 
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
 
@@ -42,9 +42,13 @@ def tao_database():
     conn.commit()
     conn.close()
 
-def them():
-    # Đang phát triển
-    return
+def hien_thi(DSdangmuon,bang):
+    for item in bang.get_children():
+        bang.delete(item)
+
+    for dong in DSdangmuon:
+        thoigian=dong.ngay+" " +dong.giobd+" - "+dong.giokt
+        bang.insert("","end",values=(dong.id,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
 
 def sua():
     # Đang phát triển
@@ -58,44 +62,43 @@ def huy():
     # Đang phát triển
     return
 
-def luu_database(): # Đang phát triển
-    # hoten=entryHoTen.get()
-    # mssv=entryMSSV.get()
-    # ngay=comboNgay.get()
-    # thang=comboThang.get()
-    # nam=comboNam.get()
-    # gioBD=comboGioBD.get()
-    # phutBD=comboPhutBD.get()
-    # gioKT=comboGioKT.get()
-    # phutKT=comboPhutKT.get()
-    # ngay=f"{nam}-{thang}-{ngay}"
-    # giobd=f"{gioBD}:{phutBD}"
-    # giokt=f"{gioKT}:{phutKT}"
+def luu_database(DSdangmuon):
+    conn = sqlite3.connect(FILE_DATABASE)
+    cursor=conn.cursor()
 
-    # cursor.execute("""
-    #     INSERT INTO thongtinmuonphong
-    #     (hoten,mssv,ngay,giobd,giokt,trangthai)
-    #     VALUES (?,?,?,?,?,?)
-    # """,(hoten,mssv,ngay,giobd,giokt,"Đã đăng ký"))
+    for ttmp in DSdangmuon:
+        cursor.execute("""
+            INSERT INTO thongtinmuonphong
+            (ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai)
+            VALUES (?,?,?,?,?,?,?,?,?)
+        """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai))
 
-    # conn.commit()
-    # docDuLieu()
+    print("Luu thanh cong")
+    conn.commit()
+    conn.close()
     return
 
-def doc_database(): # Đang phát triển
-    # cursor.execute("""
-    #     SELECT id,hoten,mssv,ngay,giobd,giokt,trangthai
-    #     FROM thongtinmuonphong
-    # """)
+def doc_database():
+    conn = sqlite3.connect(FILE_DATABASE)
+    cursor=conn.cursor()
+    cursor.execute("""
+        SELECT ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai,id
+        FROM thongtinmuonphong
+    """)
 
-    # duLieu=cursor.fetchall()
-    # for dong in duLieu:
-    #     id,hoten,mssv,ngay,giobd,giokt,trangthai=dong
-    #     thoigian=ngay+" " +giobd+" - "+giokt
-    #     bang.insert("","end",values=(id,hoten,mssv,thoigian,trangthai))
-    return
+    duLieu=cursor.fetchall()
+    ds=[]
+    
+    for pt in duLieu:
+        tmp=ThongTinMuonPhong(pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],pt[9])
+        ds.append(tmp)
+    
+    conn.close()
+    return ds
 
 def main():
+    DSdangmuondaluu=doc_database()
+    DSdangmuon=[]
     root=Tk()
     root.title('QUẢN LÝ PHÒNG')
 
@@ -105,7 +108,7 @@ def main():
     khungNhap=Frame(root)
     khungNhap.grid(row=1,column=0)
     khungNhapGio=Frame(khungNhap)
-    khungNhapGio.grid(row=5,column=0,columnspan=2,sticky="w")
+    khungNhapGio.grid(row=6,column=0,columnspan=2,sticky="w")
     khungNut=Frame(root)
     khungNut.grid(row=2,column=0)
     khungHienThi=Frame(root)
@@ -140,12 +143,17 @@ def main():
     entrySDT = Entry(khungNhap, width=30)
     entrySDT.grid(row=3, column=1)
 
+    lblSoLuong = Label(khungNhap, text="Số lượng:")
+    lblSoLuong.grid(row=4, column=0, sticky="w")
+
+    entrySoLuong = Entry(khungNhap, width=30)
+    entrySoLuong.grid(row=4, column=1)
 
     lblNgay = Label(khungNhap, text="Ngày:")
-    lblNgay.grid(row=4, column=0, sticky="w")
+    lblNgay.grid(row=5, column=0, sticky="w")
 
     dateNgay = DateEntry(khungNhap,width=12,date_pattern="dd/mm/yyyy")
-    dateNgay.grid(row=4, column=1, sticky="w")
+    dateNgay.grid(row=5, column=1, sticky="w")
 
     lblGioBD = Label(khungNhapGio, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=0, column=0, sticky="w")
@@ -195,6 +203,21 @@ def main():
     )
     spinPhutKT.grid(row=1, column=3, sticky="w")
 
+    def them():
+        hoten=entryHoTen.get()
+        mssv=entryMSSV.get()
+        lop=entryLop.get()
+        sdt=entrySDT.get()
+        ngay=dateNgay.get()
+        giobd=spinGioBD.get()+":"+spinPhutBD.get()
+        giokt=spinGioKT.get()+":"+spinPhutKT.get()
+        soluong=entrySoLuong.get()
+        ttmp=ThongTinMuonPhong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
+        DSdangmuon.append(ttmp)
+        ds=DSdangmuondaluu+DSdangmuon
+        hien_thi(ds,bang)
+        return
+
     btnThem = Button(khungNut, text="Thêm", command=them)
     btnThem.grid(row=0, column=0)
 
@@ -207,13 +230,12 @@ def main():
     btnHuy = Button(khungNut, text="Hủy", command=huy)
     btnHuy.grid(row=0, column=3)
 
-    btnLuu = Button(khungNut, text="Lưu", command=luu_database)
+    btnLuu = Button(khungNut, text="Lưu", command=lambda: luu_database(DSdangmuon))
     btnLuu.grid(row=0, column=4)
 
     lblDanhSach=Label(khungHienThi,text="DANH SÁCH MƯỢN PHÒNG")
     lblDanhSach.grid(row=0,column=0)
 
-    doc_database()
     bang = Treeview(khungHienThi,columns=("id","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
 
     bang.heading("id", text="STT")
@@ -226,6 +248,8 @@ def main():
     bang.heading("trangthai", text="Trạng thái")
 
     bang.grid(row=1,column=0,sticky="nsew")
+
+    hien_thi(DSdangmuondaluu,bang)
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
