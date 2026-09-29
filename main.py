@@ -8,8 +8,9 @@ from tkcalendar import DateEntry
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
 
 class ThongTinMuonPhong:
-    def __init__(self,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",id=None):
+    def __init__(self,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",vitri=None,id=None):
         self.id = id
+        self.vitri = vitri
         self.ngay = ngay
         self.hoten = hoten
         self.mssv = mssv
@@ -46,9 +47,11 @@ def hien_thi(DSdangmuon,bang):
     for item in bang.get_children():
         bang.delete(item)
 
+    stt=1
     for dong in DSdangmuon:
         thoigian=dong.ngay+" " +dong.giobd+" - "+dong.giokt
-        bang.insert("","end",values=(dong.id,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
+        bang.insert("","end",values=(stt,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
+        stt+=1
 
 def sua():
     # Đang phát triển
@@ -67,11 +70,12 @@ def luu_database(DSdangmuon):
     cursor=conn.cursor()
 
     for ttmp in DSdangmuon:
-        cursor.execute("""
-            INSERT INTO thongtinmuonphong
-            (ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai)
-            VALUES (?,?,?,?,?,?,?,?,?)
-        """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai))
+        if ttmp.id==None:
+            cursor.execute("""
+                INSERT INTO thongtinmuonphong
+                (ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai)
+                VALUES (?,?,?,?,?,?,?,?,?)
+            """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai))
 
     print("Luu thanh cong")
     conn.commit()
@@ -88,17 +92,18 @@ def doc_database():
 
     duLieu=cursor.fetchall()
     ds=[]
-    
+    vt=0
     for pt in duLieu:
-        tmp=ThongTinMuonPhong(pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],pt[9])
+        tmp=ThongTinMuonPhong(pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],vt,pt[9])
         ds.append(tmp)
+        vt+=1
     
     conn.close()
     return ds
 
 def main():
-    DSdangmuondaluu=doc_database()
-    DSdangmuon=[]
+    # DSdangmuondaluu=doc_database()
+    DSdangmuon=doc_database()
     root=Tk()
     root.title('QUẢN LÝ PHÒNG')
 
@@ -214,8 +219,9 @@ def main():
         soluong=entrySoLuong.get()
         ttmp=ThongTinMuonPhong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
         DSdangmuon.append(ttmp)
-        ds=DSdangmuondaluu+DSdangmuon
-        hien_thi(ds,bang)
+        hien_thi(DSdangmuon,bang)
+        # ds=DSdangmuondaluu+DSdangmuon
+        # hien_thi(ds,bang)
         return
 
     btnThem = Button(khungNut, text="Thêm", command=them)
@@ -236,9 +242,9 @@ def main():
     lblDanhSach=Label(khungHienThi,text="DANH SÁCH MƯỢN PHÒNG")
     lblDanhSach.grid(row=0,column=0)
 
-    bang = Treeview(khungHienThi,columns=("id","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
+    bang = Treeview(khungHienThi,columns=("stt","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
 
-    bang.heading("id", text="STT")
+    bang.heading("stt", text="STT")
     bang.heading("hoten", text="Họ và tên")
     bang.heading("mssv", text="MSSV")
     bang.heading("lop", text="Lớp")
@@ -249,7 +255,7 @@ def main():
 
     bang.grid(row=1,column=0,sticky="nsew")
 
-    hien_thi(DSdangmuondaluu,bang)
+    hien_thi(DSdangmuon,bang)
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
