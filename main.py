@@ -65,6 +65,51 @@ def huy():
     # Đang phát triển
     return
 
+def khi_chon_dong(event):
+    item = bang.selection()
+
+    if not item:
+        return
+
+    item = item[0]
+
+    danh_sach_item = bang.get_children()
+    vi_tri = danh_sach_item.index(item)
+
+    ttm = DSdangmuon[vi_tri]
+
+    entryHoTen.delete(0, "end")
+    entryHoTen.insert(0, ttm.hoten)
+
+    entryMSSV.delete(0, "end")
+    entryMSSV.insert(0, ttm.mssv)
+
+    entryLop.delete(0, "end")
+    entryLop.insert(0, ttm.lop)
+
+    entrySDT.delete(0, "end")
+    entrySDT.insert(0, ttm.sdt)
+
+    entrySoLuong.delete(0, "end")
+    entrySoLuong.insert(0, ttm.soluong)
+
+    dateEntry.set_date(ttm.ngay)
+
+    giobd, phutbd = ttm.giobd.split(":")
+    giokt, phutkt = ttm.giokt.split(":")
+
+    spinGioBD.delete(0, "end")
+    spinGioBD.insert(0, giobd)
+
+    spinPhutBD.delete(0, "end")
+    spinPhutBD.insert(0, phutbd)
+
+    spinGioKT.delete(0, "end")
+    spinGioKT.insert(0, giokt)
+
+    spinPhutKT.delete(0, "end")
+    spinPhutKT.insert(0, phutkt)
+
 def luu_database(DSdangmuon):
     conn = sqlite3.connect(FILE_DATABASE)
     cursor=conn.cursor()
@@ -256,6 +301,53 @@ def main():
     bang.grid(row=1,column=0,sticky="nsew")
 
     hien_thi(DSdangmuon,bang)
+
+    def khi_chon_dong(event):
+        item = bang.selection()
+
+        if not item:
+            return
+
+        item = item[0]
+
+        danh_sach_item = bang.get_children()
+        vi_tri = danh_sach_item.index(item)
+
+        ttm = DSdangmuon[vi_tri]
+
+        entryHoTen.delete(0, "end")
+        entryHoTen.insert(0, ttm.hoten)
+
+        entryMSSV.delete(0, "end")
+        entryMSSV.insert(0, ttm.mssv)
+
+        entryLop.delete(0, "end")
+        entryLop.insert(0, ttm.lop)
+
+        entrySDT.delete(0, "end")
+        entrySDT.insert(0, ttm.sdt)
+
+        entrySoLuong.delete(0, "end")
+        entrySoLuong.insert(0, ttm.soluong)
+
+        dateNgay.set_date(ttm.ngay)
+
+        giobd, phutbd = ttm.giobd.split(":")
+        giokt, phutkt = ttm.giokt.split(":")
+
+        spinGioBD.delete(0, "end")
+        spinGioBD.insert(0, giobd)
+
+        spinPhutBD.delete(0, "end")
+        spinPhutBD.insert(0, phutbd)
+
+        spinGioKT.delete(0, "end")
+        spinGioKT.insert(0, giokt)
+
+        spinPhutKT.delete(0, "end")
+        spinPhutKT.insert(0, phutkt)
+
+    bang.bind("<<TreeviewSelect>>", khi_chon_dong)
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
