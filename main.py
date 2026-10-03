@@ -53,9 +53,9 @@ def hien_thi(DSdangmuon,bang):
         bang.insert("","end",values=(stt,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
         stt+=1
 
-def sua():
-    # Đang phát triển
-    return
+# def sua():
+#     # Đang phát triển
+#     return
 
 def xoa():
     # Đang phát triển
@@ -121,6 +121,12 @@ def luu_database(DSdangmuon):
                 (ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai)
                 VALUES (?,?,?,?,?,?,?,?,?)
             """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai))
+        else:
+            cursor.execute("""
+                UPDATE thongtinmuonphong
+                SET ngay=?,hoten=?,mssv=?,lop=?,sdt=?,giobd=?,giokt=?,soluong=?,trangthai=?
+                WHERE id=?
+            """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai,ttmp.id))
 
     print("Luu thanh cong")
     conn.commit()
@@ -148,6 +154,7 @@ def doc_database():
 
 def main():
     # DSdangmuondaluu=doc_database()
+    co_thay_doi=0
     DSdangmuon=doc_database()
     root=Tk()
     root.title('QUẢN LÝ PHÒNG')
@@ -208,81 +215,26 @@ def main():
     lblGioBD = Label(khungNhapGio, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=0, column=0, sticky="w")
 
-    spinGioBD = Spinbox(
-        khungNhapGio,
-        from_=0,
-        to=23,
-        width=3,
-        format="%02.0f"
-    )
+    spinGioBD = Spinbox(khungNhapGio,from_=0,to=23,width=3,format="%02.0f")
     spinGioBD.grid(row=0, column=1, sticky="w")
 
     lblHaiChamBD = Label(khungNhapGio, text=":")
     lblHaiChamBD.grid(row=0, column=2)
 
-    spinPhutBD = Spinbox(
-        khungNhapGio,
-        from_=0,
-        to=59,
-        width=3,
-        format="%02.0f"
-    )
+    spinPhutBD = Spinbox(khungNhapGio,from_=0,to=59,width=3,format="%02.0f")
     spinPhutBD.grid(row=0, column=3, sticky="w")
 
     lblGioKT = Label(khungNhapGio, text="Kết thúc:")
     lblGioKT.grid(row=1, column=0, sticky="w")
 
-    spinGioKT = Spinbox(
-        khungNhapGio,
-        from_=8,
-        to=20,
-        width=3,
-        format="%02.0f"
-    )
+    spinGioKT = Spinbox(khungNhapGio,from_=8,to=20,width=3,format="%02.0f")
     spinGioKT.grid(row=1, column=1, sticky="w")
 
     lblHaiChamKT = Label(khungNhapGio, text=":")
     lblHaiChamKT.grid(row=1, column=2)
 
-    spinPhutKT = Spinbox(
-        khungNhapGio,
-        from_=0,
-        to=59,
-        width=3,
-        format="%02.0f"
-    )
+    spinPhutKT = Spinbox(khungNhapGio,from_=0,to=59,width=3,format="%02.0f")
     spinPhutKT.grid(row=1, column=3, sticky="w")
-
-    def them():
-        hoten=entryHoTen.get()
-        mssv=entryMSSV.get()
-        lop=entryLop.get()
-        sdt=entrySDT.get()
-        ngay=dateNgay.get()
-        giobd=spinGioBD.get()+":"+spinPhutBD.get()
-        giokt=spinGioKT.get()+":"+spinPhutKT.get()
-        soluong=entrySoLuong.get()
-        ttmp=ThongTinMuonPhong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
-        DSdangmuon.append(ttmp)
-        hien_thi(DSdangmuon,bang)
-        # ds=DSdangmuondaluu+DSdangmuon
-        # hien_thi(ds,bang)
-        return
-
-    btnThem = Button(khungNut, text="Thêm", command=them)
-    btnThem.grid(row=0, column=0)
-
-    btnSua = Button(khungNut, text="Sửa", command=sua)
-    btnSua.grid(row=0, column=1)
-
-    btnXoa = Button(khungNut, text="Xóa", command=xoa)
-    btnXoa.grid(row=0, column=2)
-
-    btnHuy = Button(khungNut, text="Hủy", command=huy)
-    btnHuy.grid(row=0, column=3)
-
-    btnLuu = Button(khungNut, text="Lưu", command=lambda: luu_database(DSdangmuon))
-    btnLuu.grid(row=0, column=4)
 
     lblDanhSach=Label(khungHienThi,text="DANH SÁCH MƯỢN PHÒNG")
     lblDanhSach.grid(row=0,column=0)
@@ -302,7 +254,80 @@ def main():
 
     hien_thi(DSdangmuon,bang)
 
+    def lay_du_lieu_tu_form():
+        hoten=entryHoTen.get()
+        mssv=entryMSSV.get()
+        lop=entryLop.get()
+        sdt=entrySDT.get()
+        ngay=dateNgay.get()
+        giobd=spinGioBD.get()+":"+spinPhutBD.get()
+        giokt=spinGioKT.get()+":"+spinPhutKT.get()
+        soluong=entrySoLuong.get()
+        dulieu=ThongTinMuonPhong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
+        return dulieu
+
+    def them():
+        dlform=lay_du_lieu_tu_form()
+        # hoten=entryHoTen.get()
+        # mssv=entryMSSV.get()
+        # lop=entryLop.get()
+        # sdt=entrySDT.get()
+        # ngay=dateNgay.get()
+        # giobd=spinGioBD.get()+":"+spinPhutBD.get()
+        # giokt=spinGioKT.get()+":"+spinPhutKT.get()
+        # soluong=entrySoLuong.get()
+
+        # ttmp=ThongTinMuonPhong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
+        DSdangmuon.append(dlform)
+        hien_thi(DSdangmuon,bang)
+        # ds=DSdangmuondaluu+DSdangmuon
+        # hien_thi(ds,bang)
+        btnThem.config(state="diable")
+        btnLuu.config(state="normal")
+        nonlocal co_thay_doi
+        co_thay_doi=1
+        return
+
+    def hien_nut(event=None):
+        nonlocal vi_tri_dang_chon
+        dlform=lay_du_lieu_tu_form()
+        if kt_trung_lich()==0 and (dlform.hoten and dlform.lop and dlform.mssv and dlform.sdt and dlform.soluong):
+            btnThem.config(state="normal")
+        else:
+            btnThem.config(state="disable")
+
+        if vi_tri_dang_chon!=None:
+            btnSua.config(state="normal")
+            btnXoa.config(state="normal")
+            btnHuy.config(state="normal")
+    
+    def kt_trung_lich():
+        nonlocal vi_tri_dang_chon
+        dlform1=lay_du_lieu_tu_form()
+        if vi_tri_dang_chon!=None:
+            dlform2=DSdangmuon[vi_tri_dang_chon]
+            if dlform1.ngay!=dlform2.ngay or dlform1.giobd!=dlform2.giobd or dlform1.giokt!=dlform2.giokt:
+                return 0 # không trùng lịch
+        else:
+            for ttmp in DSdangmuon:
+                if dlform1.ngay!=ttmp.ngay or dlform1.giobd!=ttmp.giobd or dlform1.giokt!=ttmp.giokt:
+                    return 0 # không trùng lịch
+        return 1
+
+    def lam_trong_form():
+        entryHoTen.delete(0, "end")
+        entryMSSV.delete(0, "end")
+        entryLop.delete(0, "end")
+        entrySDT.delete(0, "end")
+        entrySoLuong.delete(0, "end")
+        spinGioBD.delete(0, "end")
+        spinPhutBD.delete(0, "end")
+        spinGioKT.delete(0, "end")
+        spinPhutKT.delete(0, "end")
+
+    vi_tri_dang_chon = None
     def khi_chon_dong(event):
+        nonlocal vi_tri_dang_chon
         item = bang.selection()
 
         if not item:
@@ -314,20 +339,22 @@ def main():
         vi_tri = danh_sach_item.index(item)
 
         ttm = DSdangmuon[vi_tri]
+        vi_tri_dang_chon = vi_tri
 
-        entryHoTen.delete(0, "end")
+        lam_trong_form()
+        # entryHoTen.delete(0, "end")
         entryHoTen.insert(0, ttm.hoten)
 
-        entryMSSV.delete(0, "end")
+        # entryMSSV.delete(0, "end")
         entryMSSV.insert(0, ttm.mssv)
 
-        entryLop.delete(0, "end")
+        # entryLop.delete(0, "end")
         entryLop.insert(0, ttm.lop)
 
-        entrySDT.delete(0, "end")
+        # entrySDT.delete(0, "end")
         entrySDT.insert(0, ttm.sdt)
 
-        entrySoLuong.delete(0, "end")
+        # entrySoLuong.delete(0, "end")
         entrySoLuong.insert(0, ttm.soluong)
 
         dateNgay.set_date(ttm.ngay)
@@ -335,19 +362,81 @@ def main():
         giobd, phutbd = ttm.giobd.split(":")
         giokt, phutkt = ttm.giokt.split(":")
 
-        spinGioBD.delete(0, "end")
+        # spinGioBD.delete(0, "end")
         spinGioBD.insert(0, giobd)
 
-        spinPhutBD.delete(0, "end")
+        # spinPhutBD.delete(0, "end")
         spinPhutBD.insert(0, phutbd)
 
-        spinGioKT.delete(0, "end")
+        # spinGioKT.delete(0, "end")
         spinGioKT.insert(0, giokt)
 
-        spinPhutKT.delete(0, "end")
+        # spinPhutKT.delete(0, "end")
         spinPhutKT.insert(0, phutkt)
 
     bang.bind("<<TreeviewSelect>>", khi_chon_dong)
+
+    def sua():
+        nonlocal vi_tri_dang_chon
+        if vi_tri_dang_chon == None:
+            return
+
+        ttm = DSdangmuon[vi_tri_dang_chon]
+
+        # Lấy dữ liệu mới từ form
+        ttm.hoten = entryHoTen.get()
+        ttm.mssv = entryMSSV.get()
+        ttm.lop = entryLop.get()
+        ttm.sdt = entrySDT.get()
+        ttm.soluong = entrySoLuong.get()
+
+        ttm.ngay = dateNgay.get()
+
+        ttm.giobd = (
+            f"{int(spinGioBD.get()):02d}:"
+            f"{int(spinPhutBD.get()):02d}"
+        )
+
+        ttm.giokt = (
+            f"{int(spinGioKT.get()):02d}:"
+            f"{int(spinPhutKT.get()):02d}"
+        )
+
+        vi_tri_dang_chon=None
+        lam_trong_form()
+        # Hiển thị lại Treeview
+        hien_thi(DSdangmuon,bang)
+        hien_nut()
+        btnLuu.config(state="normal")
+        nonlocal co_thay_doi
+        co_thay_doi=1
+    
+    entryHoTen.bind("<KeyRelease>", hien_nut)
+    entryLop.bind("<KeyRelease>", hien_nut)
+    entryMSSV.bind("<KeyRelease>", hien_nut)
+    entrySDT.bind("<KeyRelease>", hien_nut)
+    entrySoLuong.bind("<KeyRelease>", hien_nut)
+
+    btnThem = Button(khungNut, text="Thêm", command=them)
+    btnThem.grid(row=0, column=0)
+
+    btnSua = Button(khungNut, text="Sửa", command=sua)
+    btnSua.grid(row=0, column=1)
+
+    btnXoa = Button(khungNut, text="Xóa", command=xoa)
+    btnXoa.grid(row=0, column=2)
+
+    btnHuy = Button(khungNut, text="Hủy", command=huy)
+    btnHuy.grid(row=0, column=3)
+
+    btnLuu = Button(khungNut, text="Lưu", command=lambda: luu_database(DSdangmuon))
+    btnLuu.grid(row=0, column=4)
+
+    btnThem.config(state="disable")
+    btnSua.config(state="disable")
+    btnXoa.config(state="disable")
+    btnHuy.config(state="disable")
+    btnLuu.config(state="disable")
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
