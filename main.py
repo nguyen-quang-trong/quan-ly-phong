@@ -96,7 +96,6 @@ def hien_thi(DSdangmuon,bang):
         stt+=1
 
 def main():
-    # DSdangmuondaluu=doc_database()
     co_thay_doi=0
     DSdangmuon=doc_database()
     root=Tk()
@@ -181,7 +180,7 @@ def main():
         dlform=lay_du_lieu_tu_form()
         DSdangmuon.append(dlform)
         hien_thi(DSdangmuon,bang)
-        btnThem.config(state="diable")
+        btnThem.config(state="disable")
         btnLuu.config(state="normal")
         nonlocal co_thay_doi
         co_thay_doi=1
@@ -191,7 +190,7 @@ def main():
         nonlocal vi_tri_dang_chon
         dlform1=lay_du_lieu_tu_form()
         if vi_tri_dang_chon==None:
-            if (kt_trung_lich==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
+            if (kt_trung_lich()==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
                 btnThem.config(state="normal")
             else:
                 btnThem.config(state="disable")
@@ -208,18 +207,22 @@ def main():
         dlform1=lay_du_lieu_tu_form()
         gbd,pbd=dlform1.giobd.split(":")
         gkt,pkt=dlform1.giokt.split(":")
-        gbd=int(gbd)
-        pbd=int(pbd)
-        gkt=int(gkt)
-        pkt=int(pkt)
-        if (gbd<gkt or (gbd==gkt and pbd<pkt)):
-            return 0
-        
-        # for ttmp in DSdangmuon:
-        #     if dlform1.ngay!=ttmp.ngay or dlform1.giobd!=ttmp.giobd or dlform1.giokt!=ttmp.giokt:
-        #         return 0
+        gbd=int(gbd)*60+int(pbd)
+        gkt=int(gkt)*60+int(pkt)
+        if gbd>=gkt:
+            return 1
 
-        return 1 # có trùng lịch
+        for ttmp in DSdangmuon:
+            gbd2,pbd2=ttmp.giobd.split(":")
+            gkt2,pkt2=ttmp.giokt.split(":")
+            gbd2=int(gbd2)*60+int(pbd2)
+            gkt2=int(gkt2)*60+int(pkt2)
+            if dlform1.ngay==ttmp.ngay:
+                if gbd<gkt2 and gbd2<gkt:
+                    print("trung lan 2")
+                    return 1
+
+        return 0 # không có trùng lịch
 
     def lam_trong_form():
         nonlocal vi_tri_dang_chon
@@ -326,6 +329,10 @@ def main():
         nonlocal co_thay_doi
         co_thay_doi=1
         lam_trong_form()
+
+    def luu():
+        luu_database(DSdangmuon)
+        btnLuu.config(state="disable")
     
     entryHoTen.bind("<KeyRelease>", hien_nut)
     entryLop.bind("<KeyRelease>", hien_nut)
@@ -362,18 +369,14 @@ def main():
     btnSua = Button(khungNut, text="Sửa", command=sua)
     btnSua.grid(row=0, column=1)
 
-    # btnXoa = Button(khungNut, text="Xóa", command=xoa)
-    # btnXoa.grid(row=0, column=2)
-
     btnHuy = Button(khungNut, text="Hủy", command=lam_trong_form)
     btnHuy.grid(row=0, column=3)
 
-    btnLuu = Button(khungNut, text="Lưu", command=lambda: luu_database(DSdangmuon))
+    btnLuu = Button(khungNut, text="Lưu", command=luu)
     btnLuu.grid(row=0, column=4)
 
     btnThem.config(state="disable")
     btnSua.config(state="disable")
-    # btnXoa.config(state="disable")
     btnHuy.config(state="disable")
     btnLuu.config(state="disable")
 
