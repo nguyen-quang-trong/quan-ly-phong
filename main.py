@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from datetime import *
 
 from tkinter import Tk, Frame, Label, Entry, Button, Spinbox
 from tkinter.ttk import Treeview
@@ -95,9 +96,29 @@ def hien_thi(DSdangmuon,bang):
         bang.insert("","end",values=(stt,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
         stt+=1
 
+def sap_xep(DSdangmuon):
+    for i in range(len(DSdangmuon)-1):
+        for j in range(i+1,len(DSdangmuon)):
+            n1= datetime.strptime(DSdangmuon[i].ngay, "%d/%m/%Y").date()
+            n2= datetime.strptime(DSdangmuon[j].ngay, "%d/%m/%Y").date()
+            if n1>n2:
+                DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
+            elif n1==n2:
+                gbd,pbd=DSdangmuon[i].giobd.split(":")
+                gkt,pkt=DSdangmuon[i].giokt.split(":")
+                gbd=int(gbd)*60+int(pbd)
+                gkt=int(gkt)*60+int(pkt)
+                gbd2,pbd2=DSdangmuon[j].giobd.split(":")
+                gkt2,pkt2=DSdangmuon[j].giokt.split(":")
+                gbd2=int(gbd2)*60+int(pbd2)
+                gkt2=int(gkt2)*60+int(pkt2)
+                if gbd>gbd2:
+                    DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
+
 def main():
     co_thay_doi=0
     DSdangmuon=doc_database()
+    sap_xep(DSdangmuon)
     root=Tk()
     root.title('QUẢN LÝ PHÒNG')
 
@@ -179,11 +200,10 @@ def main():
     def them():
         dlform=lay_du_lieu_tu_form()
         DSdangmuon.append(dlform)
+        sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,bang)
         btnThem.config(state="disable")
         btnLuu.config(state="normal")
-        nonlocal co_thay_doi
-        co_thay_doi=1
         return
 
     def hien_nut(event=None):
@@ -323,11 +343,10 @@ def main():
         vi_tri_dang_chon=None
         
         # Hiển thị lại Treeview
+        sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,bang)
         hien_nut()
         btnLuu.config(state="normal")
-        nonlocal co_thay_doi
-        co_thay_doi=1
         lam_trong_form()
 
     def luu():
