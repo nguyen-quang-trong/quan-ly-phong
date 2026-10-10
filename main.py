@@ -103,6 +103,7 @@ def sap_xep(DSdangmuon):
             n2= datetime.strptime(DSdangmuon[j].ngay, "%d/%m/%Y").date()
             if n1>n2:
                 DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
+                DSdangmuon[i].vitri,DSdangmuon[j].vitri=DSdangmuon[j].vitri,DSdangmuon[i].vitri
             elif n1==n2:
                 gbd,pbd=DSdangmuon[i].giobd.split(":")
                 gkt,pkt=DSdangmuon[i].giokt.split(":")
@@ -114,6 +115,7 @@ def sap_xep(DSdangmuon):
                 gkt2=int(gkt2)*60+int(pkt2)
                 if gbd>gbd2:
                     DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
+                    DSdangmuon[i].vitri,DSdangmuon[j].vitri=DSdangmuon[j].vitri,DSdangmuon[i].vitri
 
 def main():
     co_thay_doi=0
@@ -209,12 +211,13 @@ def main():
     def hien_nut(event=None):
         nonlocal vi_tri_dang_chon
         dlform1=lay_du_lieu_tu_form()
-        if vi_tri_dang_chon==None:
-            if (kt_trung_lich()==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
-                btnThem.config(state="normal")
-            else:
-                btnThem.config(state="disable")
+        
+        if (kt_trung_lich()==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
+            btnThem.config(state="normal")
         else:
+            btnThem.config(state="disable")
+            
+        if vi_tri_dang_chon!=None:
             if kt_trung_lich()==0:
                 btnSua.config(state="normal")
             else:
@@ -237,9 +240,10 @@ def main():
             gkt2,pkt2=ttmp.giokt.split(":")
             gbd2=int(gbd2)*60+int(pbd2)
             gkt2=int(gkt2)*60+int(pkt2)
+            if int(vi_tri_dang_chon)==int(ttmp.vitri):
+                continue
             if dlform1.ngay==ttmp.ngay:
                 if gbd<gkt2 and gbd2<gkt:
-                    print("trung lan 2")
                     return 1
 
         return 0 # không có trùng lịch
@@ -339,15 +343,15 @@ def main():
             f"{int(spinGioKT.get()):02d}:"
             f"{int(spinPhutKT.get()):02d}"
         )
-
-        vi_tri_dang_chon=None
         
+        DSdangmuon[vi_tri_dang_chon]=ttm
         # Hiển thị lại Treeview
         sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,bang)
         hien_nut()
         btnLuu.config(state="normal")
         lam_trong_form()
+        vi_tri_dang_chon=None
 
     def luu():
         luu_database(DSdangmuon)
