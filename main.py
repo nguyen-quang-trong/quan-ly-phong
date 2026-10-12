@@ -8,7 +8,7 @@ from tkcalendar import DateEntry
 
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
 
-class ThongTinMuonPhong:
+class thong_tin_muon_phong:
     def __init__(self,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",vitri=None,id=None):
         self.id = id
         self.vitri = vitri
@@ -27,7 +27,7 @@ def tao_database():
     cursor=conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS thongtinmuonphong(
+        CREATE TABLE IF NOT EXISTS thong_tin_muon_phong(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ngay TEXT NOT NULL,
             hoten TEXT NOT NULL,
@@ -43,6 +43,7 @@ def tao_database():
 
     conn.commit()
     conn.close()
+    return
 
 def luu_database(DSdangmuon):
     conn = sqlite3.connect(FILE_DATABASE)
@@ -51,18 +52,17 @@ def luu_database(DSdangmuon):
     for ttmp in DSdangmuon:
         if ttmp.id==None:
             cursor.execute("""
-                INSERT INTO thongtinmuonphong
+                INSERT INTO thong_tin_muon_phong
                 (ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai)
                 VALUES (?,?,?,?,?,?,?,?,?)
             """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai))
         else:
             cursor.execute("""
-                UPDATE thongtinmuonphong
+                UPDATE thong_tin_muon_phong
                 SET ngay=?,hoten=?,mssv=?,lop=?,sdt=?,giobd=?,giokt=?,soluong=?,trangthai=?
                 WHERE id=?
             """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai,ttmp.id))
 
-    print("Luu thanh cong")
     conn.commit()
     conn.close()
     return
@@ -72,28 +72,28 @@ def doc_database():
     cursor=conn.cursor()
     cursor.execute("""
         SELECT ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai,id
-        FROM thongtinmuonphong
+        FROM thong_tin_muon_phong
     """)
 
     duLieu=cursor.fetchall()
     ds=[]
     vt=0
     for pt in duLieu:
-        tmp=ThongTinMuonPhong(pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],vt,pt[9])
+        tmp=thong_tin_muon_phong(pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],vt,pt[9])
         ds.append(tmp)
         vt+=1
     
     conn.close()
     return ds
 
-def hien_thi(DSdangmuon,bang):
-    for item in bang.get_children():
-        bang.delete(item)
+def hien_thi(DSdangmuon,treeview_bang):
+    for item in treeview_bang.get_children():
+        treeview_bang.delete(item)
 
     stt=1
     for dong in DSdangmuon:
         thoigian=dong.ngay+" " +dong.giobd+" - "+dong.giokt
-        bang.insert("","end",values=(stt,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
+        treeview_bang.insert("","end",values=(stt,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
         stt+=1
 
 def sap_xep(DSdangmuon):
@@ -118,7 +118,7 @@ def sap_xep(DSdangmuon):
                     DSdangmuon[i].vitri,DSdangmuon[j].vitri=DSdangmuon[j].vitri,DSdangmuon[i].vitri
 
 def main():
-    co_thay_doi=0
+    # co_thay_doi=0
     DSdangmuon=doc_database()
     sap_xep(DSdangmuon)
     root=Tk()
@@ -127,85 +127,85 @@ def main():
     root.rowconfigure(3, weight=1)
     root.columnconfigure(0, weight=1)
 
-    khungNhap=Frame(root)
-    khungNhap.grid(row=1,column=0)
-    khungNhapGio=Frame(khungNhap)
-    khungNhapGio.grid(row=6,column=0,columnspan=2,sticky="w")
-    khungNut=Frame(root)
-    khungNut.grid(row=2,column=0)
-    khungHienThi=Frame(root)
-    khungHienThi.grid(row=3,column=0,sticky="nsew")
-    khungHienThi.rowconfigure(1, weight=1)
-    khungHienThi.columnconfigure(0, weight=1)
+    frame_nhap=Frame(root)
+    frame_nhap.grid(row=1,column=0)
+    frame_nhapGio=Frame(frame_nhap)
+    frame_nhapGio.grid(row=6,column=0,columnspan=2,sticky="w")
+    frame_nut=Frame(root)
+    frame_nut.grid(row=2,column=0)
+    frame_hienthids=Frame(root)
+    frame_hienthids.grid(row=3,column=0,sticky="nsew")
+    frame_hienthids.rowconfigure(1, weight=1)
+    frame_hienthids.columnconfigure(0, weight=1)
 
-    lblHoTen = Label(khungNhap, text="Họ và tên:")
-    lblHoTen.grid(row=0, column=0, sticky="w")
-    entryHoTen = Entry(khungNhap, width=30)
-    entryHoTen.grid(row=0, column=1)
-    entryHoTen.focus_set()
+    label_hoten = Label(frame_nhap, text="Họ và tên:")
+    label_hoten.grid(row=0, column=0, sticky="w")
+    entry_hoten = Entry(frame_nhap, width=30)
+    entry_hoten.grid(row=0, column=1)
+    entry_hoten.focus_set()
 
-    lblMSSV = Label(khungNhap, text="MSSV:")
-    lblMSSV.grid(row=1, column=0, sticky="w")
-    entryMSSV = Entry(khungNhap, width=30)
-    entryMSSV.grid(row=1, column=1)
+    label_mssv = Label(frame_nhap, text="MSSV:")
+    label_mssv.grid(row=1, column=0, sticky="w")
+    entry_mssv = Entry(frame_nhap, width=30)
+    entry_mssv.grid(row=1, column=1)
 
-    lblLop = Label(khungNhap, text="Lớp:")
-    lblLop.grid(row=2, column=0, sticky="w")
-    entryLop = Entry(khungNhap, width=30)
-    entryLop.grid(row=2, column=1)
+    label_lop = Label(frame_nhap, text="Lớp:")
+    label_lop.grid(row=2, column=0, sticky="w")
+    entry_lop = Entry(frame_nhap, width=30)
+    entry_lop.grid(row=2, column=1)
 
-    lblSDT = Label(khungNhap, text="SĐT:")
-    lblSDT.grid(row=3, column=0, sticky="w")
-    entrySDT = Entry(khungNhap, width=30)
-    entrySDT.grid(row=3, column=1)
+    label_sdt = Label(frame_nhap, text="SĐT:")
+    label_sdt.grid(row=3, column=0, sticky="w")
+    entry_sdt = Entry(frame_nhap, width=30)
+    entry_sdt.grid(row=3, column=1)
 
-    lblSoLuong = Label(khungNhap, text="Số lượng:")
-    lblSoLuong.grid(row=4, column=0, sticky="w")
-    entrySoLuong = Entry(khungNhap, width=30)
-    entrySoLuong.grid(row=4, column=1)
+    label_soluong = Label(frame_nhap, text="Số lượng:")
+    label_soluong.grid(row=4, column=0, sticky="w")
+    entry_soluong = Entry(frame_nhap, width=30)
+    entry_soluong.grid(row=4, column=1)
 
-    lblNgay = Label(khungNhap, text="Ngày:")
-    lblNgay.grid(row=5, column=0, sticky="w")
-    dateNgay = DateEntry(khungNhap,width=12,date_pattern="dd/mm/yyyy")
-    dateNgay.grid(row=5, column=1, sticky="w")
-    dateNgay.delete(0, "end")
+    label_ngay = Label(frame_nhap, text="Ngày:")
+    label_ngay.grid(row=5, column=0, sticky="w")
+    dateentry_ngay = DateEntry(frame_nhap,width=12,date_pattern="dd/mm/yyyy")
+    dateentry_ngay.grid(row=5, column=1, sticky="w")
+    dateentry_ngay.delete(0, "end")
 
-    lblDanhSach=Label(khungHienThi,text="DANH SÁCH MƯỢN PHÒNG")
-    lblDanhSach.grid(row=0,column=0)
+    label_danhsach=Label(frame_hienthids,text="DANH SÁCH MƯỢN PHÒNG")
+    label_danhsach.grid(row=0,column=0)
 
-    bang = Treeview(khungHienThi,columns=("stt","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
+    treeview_bang = Treeview(frame_hienthids,columns=("stt","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
 
-    bang.heading("stt", text="STT")
-    bang.heading("hoten", text="Họ và tên")
-    bang.heading("mssv", text="MSSV")
-    bang.heading("lop", text="Lớp")
-    bang.heading("sdt", text="SĐT")
-    bang.heading("thoigian",text="Thời gian")
-    bang.heading("soluong", text="Số lượng")
-    bang.heading("trangthai", text="Trạng thái")
+    treeview_bang.heading("stt", text="STT")
+    treeview_bang.heading("hoten", text="Họ và tên")
+    treeview_bang.heading("mssv", text="MSSV")
+    treeview_bang.heading("lop", text="Lớp")
+    treeview_bang.heading("sdt", text="SĐT")
+    treeview_bang.heading("thoigian",text="Thời gian")
+    treeview_bang.heading("soluong", text="Số lượng")
+    treeview_bang.heading("trangthai", text="Trạng thái")
 
-    bang.grid(row=1,column=0,sticky="nsew")
-    hien_thi(DSdangmuon,bang)
+    treeview_bang.grid(row=1,column=0,sticky="nsew")
+    hien_thi(DSdangmuon,treeview_bang)
 
     def lay_du_lieu_tu_form():
-        hoten=entryHoTen.get()
-        mssv=entryMSSV.get()
-        lop=entryLop.get()
-        sdt=entrySDT.get()
-        ngay=dateNgay.get()
+        hoten=entry_hoten.get()
+        mssv=entry_mssv.get()
+        lop=entry_lop.get()
+        sdt=entry_sdt.get()
+        ngay=dateentry_ngay.get()
         giobd=spinGioBD.get()+":"+spinPhutBD.get()
         giokt=spinGioKT.get()+":"+spinPhutKT.get()
-        soluong=entrySoLuong.get()
-        dulieu=ThongTinMuonPhong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
+        soluong=entry_soluong.get()
+        dulieu=thong_tin_muon_phong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
         return dulieu
 
-    def them():
+    def button_them_click():
         dlform=lay_du_lieu_tu_form()
         DSdangmuon.append(dlform)
         sap_xep(DSdangmuon)
-        hien_thi(DSdangmuon,bang)
-        btnThem.config(state="disable")
-        btnLuu.config(state="normal")
+        hien_thi(DSdangmuon,treeview_bang)
+        button_them.config(state="disable")
+        button_luu.config(state="normal")
         return
 
     def hien_nut(event=None):
@@ -213,16 +213,16 @@ def main():
         dlform1=lay_du_lieu_tu_form()
         
         if (kt_trung_lich(0)==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
-            btnThem.config(state="normal")
+            button_them.config(state="normal")
         else:
-            btnThem.config(state="disable")
+            button_them.config(state="disable")
             
         if vi_tri_dang_chon!=None:
             if kt_trung_lich(1)==0:
-                btnSua.config(state="normal")
+                button_sua.config(state="normal")
             else:
-                btnSua.config(state="disable")
-        btnHuy.config(state="normal")
+                button_sua.config(state="disable")
+        button_huy.config(state="normal")
         return
     
     def kt_trung_lich(dang_sua):
@@ -249,58 +249,58 @@ def main():
 
         return 0 # không có trùng lịch
 
-    def lam_trong_form():
+    def button_huy_click():
         nonlocal vi_tri_dang_chon
-        entryHoTen.delete(0, "end")
-        entryMSSV.delete(0, "end")
-        entryLop.delete(0, "end")
-        entrySDT.delete(0, "end")
-        entrySoLuong.delete(0, "end")
-        dateNgay.delete(0, "end")
+        entry_hoten.delete(0, "end")
+        entry_mssv.delete(0, "end")
+        entry_lop.delete(0, "end")
+        entry_sdt.delete(0, "end")
+        entry_soluong.delete(0, "end")
+        dateentry_ngay.delete(0, "end")
         spinGioBD.delete(0, "end")
         spinPhutBD.delete(0, "end")
         spinGioKT.delete(0, "end")
         spinPhutKT.delete(0, "end")
         
-        btnThem.config(state="disable")
-        btnSua.config(state="disable")
-        btnHuy.config(state="disable")
+        button_them.config(state="disable")
+        button_sua.config(state="disable")
+        button_huy.config(state="disable")
         vi_tri_dang_chon=None
-        entryHoTen.focus_set()
+        entry_hoten.focus_set()
 
     vi_tri_dang_chon = None
     def khi_chon_dong(event):
         nonlocal vi_tri_dang_chon
-        item = bang.selection()
+        item = treeview_bang.selection()
 
         if not item:
             return
 
         item = item[0]
 
-        danh_sach_item = bang.get_children()
+        danh_sach_item = treeview_bang.get_children()
         vi_tri = danh_sach_item.index(item)
 
         ttm = DSdangmuon[vi_tri]
-        lam_trong_form()
+        button_huy_click()
         vi_tri_dang_chon = vi_tri
 
-        # entryHoTen.delete(0, "end")
-        entryHoTen.insert(0, ttm.hoten)
+        # entry_hoten.delete(0, "end")
+        entry_hoten.insert(0, ttm.hoten)
 
-        # entryMSSV.delete(0, "end")
-        entryMSSV.insert(0, ttm.mssv)
+        # entry_mssv.delete(0, "end")
+        entry_mssv.insert(0, ttm.mssv)
 
-        # entryLop.delete(0, "end")
-        entryLop.insert(0, ttm.lop)
+        # entry_lop.delete(0, "end")
+        entry_lop.insert(0, ttm.lop)
 
-        # entrySDT.delete(0, "end")
-        entrySDT.insert(0, ttm.sdt)
+        # entry_sdt.delete(0, "end")
+        entry_sdt.insert(0, ttm.sdt)
 
-        # entrySoLuong.delete(0, "end")
-        entrySoLuong.insert(0, ttm.soluong)
+        # entry_soluong.delete(0, "end")
+        entry_soluong.insert(0, ttm.soluong)
 
-        dateNgay.set_date(ttm.ngay)
+        dateentry_ngay.set_date(ttm.ngay)
 
         giobd, phutbd = ttm.giobd.split(":")
         giokt, phutkt = ttm.giokt.split(":")
@@ -317,9 +317,9 @@ def main():
         # spinPhutKT.delete(0, "end")
         spinPhutKT.insert(0, phutkt)
 
-    bang.bind("<<TreeviewSelect>>", khi_chon_dong)
+    treeview_bang.bind("<<TreeviewSelect>>", khi_chon_dong)
 
-    def sua():
+    def button_sua_click():
         nonlocal vi_tri_dang_chon
         if vi_tri_dang_chon == None:
             return
@@ -327,13 +327,13 @@ def main():
         ttm = DSdangmuon[vi_tri_dang_chon]
 
         # Lấy dữ liệu mới từ form
-        ttm.hoten = entryHoTen.get()
-        ttm.mssv = entryMSSV.get()
-        ttm.lop = entryLop.get()
-        ttm.sdt = entrySDT.get()
-        ttm.soluong = entrySoLuong.get()
+        ttm.hoten = entry_hoten.get()
+        ttm.mssv = entry_mssv.get()
+        ttm.lop = entry_lop.get()
+        ttm.sdt = entry_sdt.get()
+        ttm.soluong = entry_soluong.get()
 
-        ttm.ngay = dateNgay.get()
+        ttm.ngay = dateentry_ngay.get()
 
         ttm.giobd = (
             f"{int(spinGioBD.get()):02d}:"
@@ -348,61 +348,61 @@ def main():
         DSdangmuon[vi_tri_dang_chon]=ttm
         # Hiển thị lại Treeview
         sap_xep(DSdangmuon)
-        hien_thi(DSdangmuon,bang)
+        hien_thi(DSdangmuon,treeview_bang)
         hien_nut()
-        btnLuu.config(state="normal")
-        lam_trong_form()
+        button_luu.config(state="normal")
+        button_huy_click()
         vi_tri_dang_chon=None
 
-    def luu():
+    def button_luu_click():
         luu_database(DSdangmuon)
-        btnLuu.config(state="disable")
+        button_luu.config(state="disable")
     
-    entryHoTen.bind("<KeyRelease>", hien_nut)
-    entryLop.bind("<KeyRelease>", hien_nut)
-    entryMSSV.bind("<KeyRelease>", hien_nut)
-    entrySDT.bind("<KeyRelease>", hien_nut)
-    entrySoLuong.bind("<KeyRelease>", hien_nut)
-    dateNgay.bind("<<DateEntrySelected>>",hien_nut)
+    entry_hoten.bind("<KeyRelease>", hien_nut)
+    entry_lop.bind("<KeyRelease>", hien_nut)
+    entry_mssv.bind("<KeyRelease>", hien_nut)
+    entry_sdt.bind("<KeyRelease>", hien_nut)
+    entry_soluong.bind("<KeyRelease>", hien_nut)
+    dateentry_ngay.bind("<<DateEntrySelected>>",hien_nut)
 
-    lblGioBD = Label(khungNhapGio, text="Bắt đầu:",width=8)
+    lblGioBD = Label(frame_nhapGio, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=0, column=0, sticky="w")
-    spinGioBD = Spinbox(khungNhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
+    spinGioBD = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
     spinGioBD.grid(row=0, column=1, sticky="w")
     spinGioBD.delete(0, "end")
-    lblHaiChamBD = Label(khungNhapGio, text=":")
+    lblHaiChamBD = Label(frame_nhapGio, text=":")
     lblHaiChamBD.grid(row=0, column=2)
-    spinPhutBD = Spinbox(khungNhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
+    spinPhutBD = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
     spinPhutBD.grid(row=0, column=3, sticky="w")
     spinPhutBD.delete(0, "end")
 
-    lblGioKT = Label(khungNhapGio, text="Kết thúc:")
+    lblGioKT = Label(frame_nhapGio, text="Kết thúc:")
     lblGioKT.grid(row=1, column=0, sticky="w")
-    spinGioKT = Spinbox(khungNhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
+    spinGioKT = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
     spinGioKT.grid(row=1, column=1, sticky="w")
     spinGioKT.delete(0, "end")
-    lblHaiChamKT = Label(khungNhapGio, text=":")
+    lblHaiChamKT = Label(frame_nhapGio, text=":")
     lblHaiChamKT.grid(row=1, column=2)
-    spinPhutKT = Spinbox(khungNhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
+    spinPhutKT = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
     spinPhutKT.grid(row=1, column=3, sticky="w")
     spinPhutKT.delete(0, "end")
 
-    btnThem = Button(khungNut, text="Thêm", command=them)
-    btnThem.grid(row=0, column=0)
+    button_them = Button(frame_nut, text="Thêm", command=button_them_click)
+    button_them.grid(row=0, column=0)
 
-    btnSua = Button(khungNut, text="Sửa", command=sua)
-    btnSua.grid(row=0, column=1)
+    button_sua = Button(frame_nut, text="Sửa", command=button_sua_click)
+    button_sua.grid(row=0, column=1)
 
-    btnHuy = Button(khungNut, text="Hủy", command=lam_trong_form)
-    btnHuy.grid(row=0, column=3)
+    button_huy = Button(frame_nut, text="Hủy", command=button_huy_click)
+    button_huy.grid(row=0, column=3)
 
-    btnLuu = Button(khungNut, text="Lưu", command=luu)
-    btnLuu.grid(row=0, column=4)
+    button_luu = Button(frame_nut, text="Lưu", command=button_luu_click)
+    button_luu.grid(row=0, column=4)
 
-    btnThem.config(state="disable")
-    btnSua.config(state="disable")
-    btnHuy.config(state="disable")
-    btnLuu.config(state="disable")
+    button_them.config(state="disable")
+    button_sua.config(state="disable")
+    button_huy.config(state="disable")
+    button_luu.config(state="disable")
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
