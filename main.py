@@ -131,8 +131,10 @@ def main():
 
     frame_nhap=Frame(root)
     frame_nhap.grid(row=1,column=0)
-    frame_nhapGio=Frame(frame_nhap)
-    frame_nhapGio.grid(row=6,column=0,columnspan=2,sticky="w")
+    frame_nhap_thoigian=Frame(frame_nhap)
+    frame_nhap_thoigian.grid(row=0,column=0,sticky="wn")
+    frame_nhap_thongtin=Frame(frame_nhap)
+    frame_nhap_thongtin.grid(row=0,column=1,sticky="w")
     frame_nut=Frame(root)
     frame_nut.grid(row=2,column=0)
     frame_hienthids=Frame(root)
@@ -140,36 +142,36 @@ def main():
     frame_hienthids.rowconfigure(1, weight=1)
     frame_hienthids.columnconfigure(0, weight=1)
 
-    label_hoten = Label(frame_nhap, text="Họ và tên:")
+    label_hoten = Label(frame_nhap_thongtin, text="Họ và tên:")
     label_hoten.grid(row=0, column=0, sticky="w")
-    entry_hoten = Entry(frame_nhap, width=30)
+    entry_hoten = Entry(frame_nhap_thongtin, width=30)
     entry_hoten.grid(row=0, column=1)
-    entry_hoten.focus_set()
+    # entry_hoten.focus_set()
 
-    label_mssv = Label(frame_nhap, text="MSSV:")
+    label_mssv = Label(frame_nhap_thongtin, text="MSSV:")
     label_mssv.grid(row=1, column=0, sticky="w")
-    entry_mssv = Entry(frame_nhap, width=30)
+    entry_mssv = Entry(frame_nhap_thongtin, width=30)
     entry_mssv.grid(row=1, column=1)
 
-    label_lop = Label(frame_nhap, text="Lớp:")
+    label_lop = Label(frame_nhap_thongtin, text="Lớp:")
     label_lop.grid(row=2, column=0, sticky="w")
-    entry_lop = Entry(frame_nhap, width=30)
+    entry_lop = Entry(frame_nhap_thongtin, width=30)
     entry_lop.grid(row=2, column=1)
 
-    label_sdt = Label(frame_nhap, text="SĐT:")
+    label_sdt = Label(frame_nhap_thongtin, text="SĐT:")
     label_sdt.grid(row=3, column=0, sticky="w")
-    entry_sdt = Entry(frame_nhap, width=30)
+    entry_sdt = Entry(frame_nhap_thongtin, width=30)
     entry_sdt.grid(row=3, column=1)
 
-    label_soluong = Label(frame_nhap, text="Số lượng:")
+    label_soluong = Label(frame_nhap_thongtin, text="Số lượng:")
     label_soluong.grid(row=4, column=0, sticky="w")
-    entry_soluong = Entry(frame_nhap, width=30)
+    entry_soluong = Entry(frame_nhap_thongtin, width=30)
     entry_soluong.grid(row=4, column=1)
 
-    label_ngay = Label(frame_nhap, text="Ngày:")
-    label_ngay.grid(row=5, column=0, sticky="w")
-    dateentry_ngay = DateEntry(frame_nhap,width=12,date_pattern="dd/mm/yyyy")
-    dateentry_ngay.grid(row=5, column=1, sticky="w")
+    label_ngay = Label(frame_nhap_thoigian, text="Ngày:")
+    label_ngay.grid(row=0, column=0, sticky="w")
+    dateentry_ngay = DateEntry(frame_nhap_thoigian,width=12,date_pattern="dd/mm/yyyy")
+    dateentry_ngay.grid(row=0, column=1,columnspan=3, sticky="w")
     dateentry_ngay.delete(0, "end")
 
     label_danhsach=Label(frame_hienthids,text="DANH SÁCH MƯỢN PHÒNG")
@@ -267,11 +269,17 @@ def main():
         spin_giokt.delete(0, "end")
         spin_phutkt.delete(0, "end")
         
+        entry_hoten.config(state="disable")
+        entry_lop.config(state="disable")
+        entry_mssv.config(state="disable")
+        entry_sdt.config(state="disable")
+        entry_soluong.config(state="disable")
         button_them.config(state="disable")
         button_sua.config(state="disable")
         button_huy.config(state="disable")
         vi_tri_dang_chon=None
-        entry_hoten.focus_set()
+        # entry_hoten.focus_set()
+        return
 
     vi_tri_dang_chon = None
     def khi_chon_dong(event):
@@ -287,22 +295,27 @@ def main():
         vi_tri = danh_sach_item.index(item)
 
         ttm = DSdangmuon[vi_tri]
-        button_huy_click()
+        entry_hoten.config(state="normal")
+        entry_lop.config(state="normal")
+        entry_mssv.config(state="normal")
+        entry_sdt.config(state="normal")
+        entry_soluong.config(state="normal")
+        # button_huy_click()
         vi_tri_dang_chon = vi_tri
 
-        # entry_hoten.delete(0, "end")
+        entry_hoten.delete(0, "end")
         entry_hoten.insert(0, ttm.hoten)
 
-        # entry_mssv.delete(0, "end")
+        entry_mssv.delete(0, "end")
         entry_mssv.insert(0, ttm.mssv)
 
-        # entry_lop.delete(0, "end")
+        entry_lop.delete(0, "end")
         entry_lop.insert(0, ttm.lop)
 
-        # entry_sdt.delete(0, "end")
+        entry_sdt.delete(0, "end")
         entry_sdt.insert(0, ttm.sdt)
 
-        # entry_soluong.delete(0, "end")
+        entry_soluong.delete(0, "end")
         entry_soluong.insert(0, ttm.soluong)
 
         dateentry_ngay.set_date(ttm.ngay)
@@ -310,17 +323,19 @@ def main():
         giobd, phutbd = ttm.giobd.split(":")
         giokt, phutkt = ttm.giokt.split(":")
 
-        # spin_giobd.delete(0, "end")
+        spin_giobd.delete(0, "end")
         spin_giobd.insert(0, giobd)
 
-        # spin_phutbd.delete(0, "end")
+        spin_phutbd.delete(0, "end")
         spin_phutbd.insert(0, phutbd)
 
-        # spin_giokt.delete(0, "end")
+        spin_giokt.delete(0, "end")
         spin_giokt.insert(0, giokt)
 
-        # spin_phutkt.delete(0, "end")
+        spin_phutkt.delete(0, "end")
         spin_phutkt.insert(0, phutkt)
+        button_huy.config(state="normal")
+        return
 
     treeview_bang.bind("<<TreeviewSelect>>", khi_chon_dong)
 
@@ -360,38 +375,113 @@ def main():
         button_luu.config(state="normal")
         # button_huy_click()
         vi_tri_dang_chon=None
+        return
 
     def button_luu_click():
         luu_database(DSdangmuon)
         button_luu.config(state="disable")
-    
-    entry_hoten.bind("<KeyRelease>", hien_nut)
-    entry_lop.bind("<KeyRelease>", hien_nut)
-    entry_mssv.bind("<KeyRelease>", hien_nut)
-    entry_sdt.bind("<KeyRelease>", hien_nut)
-    entry_soluong.bind("<KeyRelease>", hien_nut)
-    dateentry_ngay.bind("<<DateEntrySelected>>",hien_nut)
+        return
 
-    lblGioBD = Label(frame_nhapGio, text="Bắt đầu:",width=8)
-    lblGioBD.grid(row=0, column=0, sticky="w")
-    spin_giobd = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
-    spin_giobd.grid(row=0, column=1, sticky="w")
+    def dateentry_ngay_change(event=None):
+        if not (spin_giobd.get() and spin_phutbd.get() and spin_giokt.get() and spin_phutkt.get()):
+            return
+        nonlocal vi_tri_dang_chon
+        if vi_tri_dang_chon==None:
+            if kt_trung_lich(0)==0:
+                entry_hoten.config(state="normal")
+                entry_lop.config(state="normal")
+                entry_mssv.config(state="normal")
+                entry_sdt.config(state="normal")
+                entry_soluong.config(state="normal")
+            else:
+                entry_hoten.config(state="disable")
+                entry_lop.config(state="disable")
+                entry_mssv.config(state="disable")
+                entry_sdt.config(state="disable")
+                entry_soluong.config(state="disable")
+        else:
+            if kt_trung_lich(0)==0:
+                button_them.config(state="normal")
+            else:
+                button_them.config(state="disable")
+
+            if kt_trung_lich(1)==0:
+                button_sua.config(state="normal")
+            else:
+                button_sua.config(state="disable")
+        return
+
+    def spin_giobd_change():
+        dateentry_ngay_change()
+        return
+    
+    def spin_phutbd_change():
+        dateentry_ngay_change()
+        return
+    
+    def spin_giokt_change():
+        dateentry_ngay_change()
+        return
+    
+    def spin_phutkt_change():
+        dateentry_ngay_change()
+        return
+
+    def entry_hoten_change(event=None):
+        nonlocal vi_tri_dang_chon
+        if vi_tri_dang_chon==None:
+            if entry_hoten.get() and entry_mssv.get() and entry_lop.get() and entry_sdt.get() and entry_soluong.get():
+                button_them.config(state="normal")
+            else:
+                button_them.config(state="disable")
+        else:
+            button_sua.config(state="normal")
+        button_huy.config(state="normal")
+        return
+    
+    def entry_mssv_change(event=None):
+        entry_hoten_change()
+        return
+
+    def entry_lop_change(event=None):
+        entry_hoten_change()
+        return
+    
+    def entry_sdt_change(event=None):
+        entry_hoten_change()
+        return
+    
+    def entry_soluong_change(event=None):
+        entry_hoten_change()
+        return
+    
+    entry_hoten.bind("<KeyRelease>", entry_hoten_change)
+    entry_lop.bind("<KeyRelease>", entry_lop_change)
+    entry_mssv.bind("<KeyRelease>", entry_mssv_change)
+    entry_sdt.bind("<KeyRelease>", entry_sdt_change)
+    entry_soluong.bind("<KeyRelease>", entry_soluong_change)
+    dateentry_ngay.bind("<<DateEntrySelected>>", dateentry_ngay_change)
+
+    lblGioBD = Label(frame_nhap_thoigian, text="Bắt đầu:",width=8)
+    lblGioBD.grid(row=1, column=0, sticky="w")
+    spin_giobd = Spinbox(frame_nhap_thoigian,from_=8,to=20,width=3,format="%02.0f",command=spin_giobd_change)
+    spin_giobd.grid(row=1, column=1, sticky="w")
     spin_giobd.delete(0, "end")
-    lblHaiChamBD = Label(frame_nhapGio, text=":")
-    lblHaiChamBD.grid(row=0, column=2)
-    spin_phutbd = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
-    spin_phutbd.grid(row=0, column=3, sticky="w")
+    lblHaiChamBD = Label(frame_nhap_thoigian, text=":")
+    lblHaiChamBD.grid(row=1, column=2)
+    spin_phutbd = Spinbox(frame_nhap_thoigian,from_=0,to=59,width=3,format="%02.0f",command=spin_phutbd_change)
+    spin_phutbd.grid(row=1, column=3, sticky="w")
     spin_phutbd.delete(0, "end")
 
-    lblGioKT = Label(frame_nhapGio, text="Kết thúc:")
-    lblGioKT.grid(row=1, column=0, sticky="w")
-    spin_giokt = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
-    spin_giokt.grid(row=1, column=1, sticky="w")
+    lblGioKT = Label(frame_nhap_thoigian, text="Kết thúc:")
+    lblGioKT.grid(row=2, column=0, sticky="w")
+    spin_giokt = Spinbox(frame_nhap_thoigian,from_=8,to=20,width=3,format="%02.0f",command=spin_giokt_change)
+    spin_giokt.grid(row=2, column=1, sticky="w")
     spin_giokt.delete(0, "end")
-    lblHaiChamKT = Label(frame_nhapGio, text=":")
-    lblHaiChamKT.grid(row=1, column=2)
-    spin_phutkt = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
-    spin_phutkt.grid(row=1, column=3, sticky="w")
+    lblHaiChamKT = Label(frame_nhap_thoigian, text=":")
+    lblHaiChamKT.grid(row=2, column=2)
+    spin_phutkt = Spinbox(frame_nhap_thoigian,from_=0,to=59,width=3,format="%02.0f",command=spin_phutkt_change)
+    spin_phutkt.grid(row=2, column=3, sticky="w")
     spin_phutkt.delete(0, "end")
 
     button_them = Button(frame_nut, text="Thêm", command=button_them_click)
@@ -406,6 +496,11 @@ def main():
     button_luu = Button(frame_nut, text="Lưu", command=button_luu_click)
     button_luu.grid(row=0, column=4)
 
+    entry_hoten.config(state="disable")
+    entry_lop.config(state="disable")
+    entry_mssv.config(state="disable")
+    entry_sdt.config(state="disable")
+    entry_soluong.config(state="disable")
     button_them.config(state="disable")
     button_sua.config(state="disable")
     button_huy.config(state="disable")
