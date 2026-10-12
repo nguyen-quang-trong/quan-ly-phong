@@ -120,7 +120,6 @@ def sap_xep(DSdangmuon):
     return
 
 def main():
-    # co_thay_doi=0
     DSdangmuon=doc_database()
     sap_xep(DSdangmuon)
     root=Tk()
@@ -525,7 +524,7 @@ def main():
 
     lblGioBD = Label(frame_nhap_thoigian, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=1, column=0, sticky="w")
-    spin_giobd = Spinbox(frame_nhap_thoigian,from_=8,to=20,width=3,format="%02.0f",command=spin_giobd_change)
+    spin_giobd = Spinbox(frame_nhap_thoigian,from_=7,to=20,width=3,format="%02.0f",command=spin_giobd_change)
     spin_giobd.grid(row=1, column=1, sticky="w")
     spin_giobd.delete(0, "end")
     lblHaiChamBD = Label(frame_nhap_thoigian, text=":")
