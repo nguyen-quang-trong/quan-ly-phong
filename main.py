@@ -104,7 +104,7 @@ def sap_xep(DSdangmuon):
             n2= datetime.strptime(DSdangmuon[j].ngay, "%d/%m/%Y").date()
             if n1>n2:
                 DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
-                DSdangmuon[i].vitri,DSdangmuon[j].vitri=DSdangmuon[j].vitri,DSdangmuon[i].vitri
+                DSdangmuon[i].vitritrongds,DSdangmuon[j].vitritrongds=DSdangmuon[j].vitritrongds,DSdangmuon[i].vitritrongds
             elif n1==n2:
                 gbd,pbd=DSdangmuon[i].giobd.split(":")
                 gkt,pkt=DSdangmuon[i].giokt.split(":")
@@ -116,7 +116,7 @@ def sap_xep(DSdangmuon):
                 gkt2=int(gkt2)*60+int(pkt2)
                 if gbd>gbd2:
                     DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
-                    DSdangmuon[i].vitri,DSdangmuon[j].vitri=DSdangmuon[j].vitri,DSdangmuon[i].vitri
+                    DSdangmuon[i].vitritrongds,DSdangmuon[j].vitritrongds=DSdangmuon[j].vitritrongds,DSdangmuon[i].vitritrongds
     return
 
 def main():
@@ -126,8 +126,12 @@ def main():
     root=Tk()
     root.title('QUẢN LÝ PHÒNG')
 
-    root.rowconfigure(3, weight=1)
-    root.columnconfigure(0, weight=1)
+    # root.rowconfigure(3, weight=1)
+    # root.columnconfigure(0, weight=1)
+    WIDTH=1000
+    HEIGHT=500
+    root.geometry(f"{WIDTH}x{HEIGHT}")
+    root.resizable(False, False)  # khóa chiều ngang và chiều dọc
 
     frame_nhap=Frame(root)
     frame_nhap.grid(row=1,column=0)
@@ -210,6 +214,15 @@ def main():
     treeview_bang.heading("thoigian",text="Thời gian")
     treeview_bang.heading("soluong", text="Số lượng")
     treeview_bang.heading("trangthai", text="Trạng thái")
+
+    treeview_bang.column("stt",width=int(WIDTH*0.04))
+    treeview_bang.column("hoten",width=int(WIDTH*0.2))
+    treeview_bang.column("mssv",width=int(WIDTH*0.12))
+    treeview_bang.column("lop",width=int(WIDTH*0.12))
+    treeview_bang.column("sdt",width=int(WIDTH*0.1))
+    treeview_bang.column("thoigian",width=int(WIDTH*0.2))
+    treeview_bang.column("soluong",width=int(WIDTH*0.1))
+    treeview_bang.column("trangthai",width=int(WIDTH*0.12))
 
     treeview_bang.grid(row=2,column=0,sticky="nsew")
     hien_thi(DSdangmuon,treeview_bang)
