@@ -197,6 +197,9 @@ def main():
     dateentry_locds_ngaykt.grid(row=0, column=3, sticky="w")
     dateentry_locds_ngaykt.delete(0, "end")
 
+    label_thongke=Label(frame_locds,text="Lọc để xem thống kê!")
+    label_thongke.grid(row=1,column=0,columnspan=4,sticky="w")
+
     treeview_bang = Treeview(frame_hienthids,columns=("stt","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
 
     treeview_bang.heading("stt", text="STT")
@@ -414,6 +417,14 @@ def main():
         hien_thi(DSdangmuon,treeview_bang)
         return
 
+    def button_locds_macdinh_click():
+        dateentry_locds_ngaybd.delete(0,"end")
+        dateentry_locds_ngaykt.delete(0,"end")
+        hien_thi(DSdangmuon,treeview_bang)
+        label_thongke.config(text="Lọc để xem thống kê!")
+        button_locds_macdinh.config(state="disable")
+        return
+
     def dateentry_ngay_change(event=None):
         if not (spin_giobd.get() and spin_phutbd.get() and spin_giokt.get() and spin_phutkt.get()):
             return
@@ -501,14 +512,15 @@ def main():
         ngaykt=datetime.strptime(dateentry_locds_ngaykt.get(), "%d/%m/%Y").date()
         for ttmp in DSdangmuon:
             ngaymuon=datetime.strptime(ttmp.ngay, "%d/%m/%Y").date()
-            if ngaybd<=ngaymuon and ngaymuon<=ngaykt:
+            if ngaybd<=ngaymuon and ngaymuon<=ngaykt and ttmp.trangthai!="Hủy đăng ký":
                 DSdangmuon_loc.append(ttmp)
                 soluongdk+=int(ttmp.soluong)
 
         hien_thi(DSdangmuon_loc,treeview_bang)
         soluotdk=len(DSdangmuon_loc)
-        label_thongke=Label(frame_locds,text=str(soluotdk)+" lượt đăng ký | "+str(soluongdk)+" số lượng sinh viên đăng ký")
+        label_thongke.config(text=str(soluotdk)+" lượt đăng ký | "+str(soluongdk)+" số lượng sinh viên đăng ký")
         label_thongke.grid(row=1,column=0,columnspan=4,sticky="w")
+        button_locds_macdinh.config(state="normal")
         return
 
     def dateentry_locds_ngaykt_change(event=None):
@@ -562,6 +574,9 @@ def main():
     button_sua_tt=Button(frame_nhap_trangthai,text="Sửa trạng thái", command=button_sua_tt_click)
     button_sua_tt.grid(row=1,column=0)
 
+    button_locds_macdinh=Button(frame_locds,text="Mặc định",command=button_locds_macdinh_click)
+    button_locds_macdinh.grid(row=0,column=5)
+
     entry_hoten.config(state="disable")
     entry_lop.config(state="disable")
     entry_mssv.config(state="disable")
@@ -572,6 +587,7 @@ def main():
     button_huy.config(state="disable")
     button_luu.config(state="disable")
     button_sua_tt.config(state="disable")
+    button_locds_macdinh.config(state="disable")
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
