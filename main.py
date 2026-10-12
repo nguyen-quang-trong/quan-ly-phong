@@ -9,9 +9,9 @@ from tkcalendar import DateEntry
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
 
 class thong_tin_muon_phong:
-    def __init__(self,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",vitri=None,id=None):
+    def __init__(self,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,vitritrongds,trangthai="Đã đăng ký",id=None):
         self.id = id
-        self.vitri = vitri
+        self.vitritrongds = vitritrongds
         self.ngay = ngay
         self.hoten = hoten
         self.mssv = mssv
@@ -187,20 +187,24 @@ def main():
     treeview_bang.grid(row=1,column=0,sticky="nsew")
     hien_thi(DSdangmuon,treeview_bang)
 
-    def lay_du_lieu_tu_form():
-        hoten=entry_hoten.get()
-        mssv=entry_mssv.get()
-        lop=entry_lop.get()
-        sdt=entry_sdt.get()
-        ngay=dateentry_ngay.get()
-        giobd=spinGioBD.get()+":"+spinPhutBD.get()
-        giokt=spinGioKT.get()+":"+spinPhutKT.get()
-        soluong=entry_soluong.get()
-        dulieu=thong_tin_muon_phong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
-        return dulieu
+    # def lay_du_lieu_tu_form():
+    #     hoten=entry_hoten.get()
+    #     mssv=entry_mssv.get()
+    #     lop=entry_lop.get()
+    #     sdt=entry_sdt.get()
+    #     ngay=dateentry_ngay.get()
+    #     giobd=spin_giobd.get()+":"+spin_phutbd.get()
+    #     giokt=spin_giokt.get()+":"+spin_phutkt.get()
+    #     soluong=entry_soluong.get()
+    #     dulieu=thong_tin_muon_phong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
+    #     return dulieu
 
     def button_them_click():
-        dlform=lay_du_lieu_tu_form()
+        # dlform=lay_du_lieu_tu_form()
+        giobd=spin_giobd.get()+":"+spin_phutbd.get()
+        giokt=spin_giokt.get()+":"+spin_phutkt.get()
+        vt=len(DSdangmuon) # xác định vị trí trong danh sách cho phần tử
+        dlform=thong_tin_muon_phong(dateentry_ngay.get(),entry_hoten.get(),entry_mssv.get(),entry_lop.get(),entry_sdt.get(),giobd,giokt,entry_soluong.get(),vt)
         DSdangmuon.append(dlform)
         sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,treeview_bang)
@@ -210,9 +214,9 @@ def main():
 
     def hien_nut(event=None):
         nonlocal vi_tri_dang_chon
-        dlform1=lay_du_lieu_tu_form()
+        # dlform1=lay_du_lieu_tu_form()
         
-        if (kt_trung_lich(0)==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
+        if (kt_trung_lich(0)==0) and (entry_hoten.get() and entry_mssv.get() and entry_lop.get() and entry_sdt.get() and entry_soluong.get()):
             button_them.config(state="normal")
         else:
             button_them.config(state="disable")
@@ -257,10 +261,10 @@ def main():
         entry_sdt.delete(0, "end")
         entry_soluong.delete(0, "end")
         dateentry_ngay.delete(0, "end")
-        spinGioBD.delete(0, "end")
-        spinPhutBD.delete(0, "end")
-        spinGioKT.delete(0, "end")
-        spinPhutKT.delete(0, "end")
+        spin_giobd.delete(0, "end")
+        spin_phutbd.delete(0, "end")
+        spin_giokt.delete(0, "end")
+        spin_phutkt.delete(0, "end")
         
         button_them.config(state="disable")
         button_sua.config(state="disable")
@@ -305,17 +309,17 @@ def main():
         giobd, phutbd = ttm.giobd.split(":")
         giokt, phutkt = ttm.giokt.split(":")
 
-        # spinGioBD.delete(0, "end")
-        spinGioBD.insert(0, giobd)
+        # spin_giobd.delete(0, "end")
+        spin_giobd.insert(0, giobd)
 
-        # spinPhutBD.delete(0, "end")
-        spinPhutBD.insert(0, phutbd)
+        # spin_phutbd.delete(0, "end")
+        spin_phutbd.insert(0, phutbd)
 
-        # spinGioKT.delete(0, "end")
-        spinGioKT.insert(0, giokt)
+        # spin_giokt.delete(0, "end")
+        spin_giokt.insert(0, giokt)
 
-        # spinPhutKT.delete(0, "end")
-        spinPhutKT.insert(0, phutkt)
+        # spin_phutkt.delete(0, "end")
+        spin_phutkt.insert(0, phutkt)
 
     treeview_bang.bind("<<TreeviewSelect>>", khi_chon_dong)
 
@@ -336,13 +340,13 @@ def main():
         ttm.ngay = dateentry_ngay.get()
 
         ttm.giobd = (
-            f"{int(spinGioBD.get()):02d}:"
-            f"{int(spinPhutBD.get()):02d}"
+            f"{int(spin_giobd.get()):02d}:"
+            f"{int(spin_phutbd.get()):02d}"
         )
 
         ttm.giokt = (
-            f"{int(spinGioKT.get()):02d}:"
-            f"{int(spinPhutKT.get()):02d}"
+            f"{int(spin_giokt.get()):02d}:"
+            f"{int(spin_phutkt.get()):02d}"
         )
         
         DSdangmuon[vi_tri_dang_chon]=ttm
@@ -367,25 +371,25 @@ def main():
 
     lblGioBD = Label(frame_nhapGio, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=0, column=0, sticky="w")
-    spinGioBD = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
-    spinGioBD.grid(row=0, column=1, sticky="w")
-    spinGioBD.delete(0, "end")
+    spin_giobd = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
+    spin_giobd.grid(row=0, column=1, sticky="w")
+    spin_giobd.delete(0, "end")
     lblHaiChamBD = Label(frame_nhapGio, text=":")
     lblHaiChamBD.grid(row=0, column=2)
-    spinPhutBD = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
-    spinPhutBD.grid(row=0, column=3, sticky="w")
-    spinPhutBD.delete(0, "end")
+    spin_phutbd = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
+    spin_phutbd.grid(row=0, column=3, sticky="w")
+    spin_phutbd.delete(0, "end")
 
     lblGioKT = Label(frame_nhapGio, text="Kết thúc:")
     lblGioKT.grid(row=1, column=0, sticky="w")
-    spinGioKT = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
-    spinGioKT.grid(row=1, column=1, sticky="w")
-    spinGioKT.delete(0, "end")
+    spin_giokt = Spinbox(frame_nhapGio,from_=8,to=20,width=3,format="%02.0f",command=hien_nut)
+    spin_giokt.grid(row=1, column=1, sticky="w")
+    spin_giokt.delete(0, "end")
     lblHaiChamKT = Label(frame_nhapGio, text=":")
     lblHaiChamKT.grid(row=1, column=2)
-    spinPhutKT = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
-    spinPhutKT.grid(row=1, column=3, sticky="w")
-    spinPhutKT.delete(0, "end")
+    spin_phutkt = Spinbox(frame_nhapGio,from_=0,to=59,width=3,format="%02.0f",command=hien_nut)
+    spin_phutkt.grid(row=1, column=3, sticky="w")
+    spin_phutkt.delete(0, "end")
 
     button_them = Button(frame_nut, text="Thêm", command=button_them_click)
     button_them.grid(row=0, column=0)
