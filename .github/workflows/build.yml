@@ -20,8 +20,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Cai PyInstaller
-        run: pip install pyinstaller
+      - name: Cai thu vien
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Build
         run: pyinstaller --onefile --windowed --name quan-ly-phong main.py
