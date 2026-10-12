@@ -212,20 +212,20 @@ def main():
         nonlocal vi_tri_dang_chon
         dlform1=lay_du_lieu_tu_form()
         
-        if (kt_trung_lich()==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
+        if (kt_trung_lich(0)==0) and (dlform1.hoten and dlform1.mssv and dlform1.lop and dlform1.sdt and dlform1.soluong):
             btnThem.config(state="normal")
         else:
             btnThem.config(state="disable")
             
         if vi_tri_dang_chon!=None:
-            if kt_trung_lich()==0:
+            if kt_trung_lich(1)==0:
                 btnSua.config(state="normal")
             else:
                 btnSua.config(state="disable")
         btnHuy.config(state="normal")
         return
     
-    def kt_trung_lich():
+    def kt_trung_lich(dang_sua):
         nonlocal vi_tri_dang_chon
         dlform1=lay_du_lieu_tu_form()
         gbd,pbd=dlform1.giobd.split(":")
@@ -240,8 +240,9 @@ def main():
             gkt2,pkt2=ttmp.giokt.split(":")
             gbd2=int(gbd2)*60+int(pbd2)
             gkt2=int(gkt2)*60+int(pkt2)
-            if int(vi_tri_dang_chon)==int(ttmp.vitri):
-                continue
+            if(dang_sua==1):
+                if int(vi_tri_dang_chon)==int(ttmp.vitri):
+                    continue
             if dlform1.ngay==ttmp.ngay:
                 if gbd<gkt2 and gbd2<gkt:
                     return 1
