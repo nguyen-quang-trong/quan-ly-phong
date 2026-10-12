@@ -2,8 +2,8 @@ import os
 import sqlite3
 from datetime import *
 
-from tkinter import Tk, Frame, Label, Entry, Button, Spinbox
-from tkinter.ttk import Treeview
+from tkinter import Tk, Frame, Label, Entry, Button, Spinbox, LabelFrame
+from tkinter.ttk import Treeview, Combobox
 from tkcalendar import DateEntry
 
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
@@ -135,6 +135,8 @@ def main():
     frame_nhap_thoigian.grid(row=0,column=0,sticky="wn")
     frame_nhap_thongtin=Frame(frame_nhap)
     frame_nhap_thongtin.grid(row=0,column=1,sticky="w")
+    frame_nhap_trangthai=LabelFrame(frame_nhap,text="Trạng thái")
+    frame_nhap_trangthai.grid(row=0,column=2,sticky="wn")
     frame_nut=Frame(root)
     frame_nut.grid(row=2,column=0)
     frame_hienthids=Frame(root)
@@ -167,6 +169,11 @@ def main():
     label_soluong.grid(row=4, column=0, sticky="w")
     entry_soluong = Entry(frame_nhap_thongtin, width=30)
     entry_soluong.grid(row=4, column=1)
+
+    tt=["Đã đăng ký", "Hủy đăng ký", "Đã trả phòng"]
+    combo_tt=Combobox(frame_nhap_trangthai,value=tt,state="disable")
+    combo_tt.grid(row=0,column=0)
+    combo_tt.current(0)
 
     label_ngay = Label(frame_nhap_thoigian, text="Ngày:")
     label_ngay.grid(row=0, column=0, sticky="w")
@@ -277,6 +284,8 @@ def main():
         button_them.config(state="disable")
         button_sua.config(state="disable")
         button_huy.config(state="disable")
+        combo_tt.config(state="disable")
+        button_sua_tt.config(state="disable")
         vi_tri_dang_chon=None
         # entry_hoten.focus_set()
         return
@@ -335,6 +344,8 @@ def main():
         spin_phutkt.delete(0, "end")
         spin_phutkt.insert(0, phutkt)
         button_huy.config(state="normal")
+        combo_tt.config(state="readonly")
+        combo_tt.set(ttm.trangthai)
         return
 
     treeview_bang.bind("<<TreeviewSelect>>", khi_chon_dong)
@@ -380,6 +391,14 @@ def main():
     def button_luu_click():
         luu_database(DSdangmuon)
         button_luu.config(state="disable")
+        return
+
+    def button_sua_tt_click():
+        nonlocal vi_tri_dang_chon
+        DSdangmuon[vi_tri_dang_chon].trangthai=combo_tt.get()
+        button_sua_tt.config(state="disable")
+        button_luu.config(state="normal")
+        hien_thi(DSdangmuon,treeview_bang)
         return
 
     def dateentry_ngay_change(event=None):
@@ -454,6 +473,10 @@ def main():
     def entry_soluong_change(event=None):
         entry_hoten_change()
         return
+
+    def combo_tt_change(event=None):
+        button_sua_tt.config(state="normal")
+        return
     
     entry_hoten.bind("<KeyRelease>", entry_hoten_change)
     entry_lop.bind("<KeyRelease>", entry_lop_change)
@@ -461,6 +484,7 @@ def main():
     entry_sdt.bind("<KeyRelease>", entry_sdt_change)
     entry_soluong.bind("<KeyRelease>", entry_soluong_change)
     dateentry_ngay.bind("<<DateEntrySelected>>", dateentry_ngay_change)
+    combo_tt.bind("<<ComboboxSelected>>", combo_tt_change)
 
     lblGioBD = Label(frame_nhap_thoigian, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=1, column=0, sticky="w")
@@ -496,6 +520,9 @@ def main():
     button_luu = Button(frame_nut, text="Lưu", command=button_luu_click)
     button_luu.grid(row=0, column=4)
 
+    button_sua_tt=Button(frame_nhap_trangthai,text="Sửa trạng thái", command=button_sua_tt_click)
+    button_sua_tt.grid(row=1,column=0)
+
     entry_hoten.config(state="disable")
     entry_lop.config(state="disable")
     entry_mssv.config(state="disable")
@@ -505,6 +532,7 @@ def main():
     button_sua.config(state="disable")
     button_huy.config(state="disable")
     button_luu.config(state="disable")
+    button_sua_tt.config(state="disable")
 
     lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
     lblThongKe.grid(row=4,column=0)
