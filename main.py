@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-from tkinter import Tk, Frame, Label, Entry, Button, Spinbox, LabelFrame
+from tkinter import Tk, Frame, Label, Entry, Button, Spinbox, LabelFrame, messagebox
 from tkinter.ttk import Treeview, Combobox, Scrollbar
 from tkcalendar import DateEntry
 from datetime import *
@@ -127,7 +127,13 @@ def main():
 
     WIDTH=1000
     HEIGHT=500
-    root.geometry(f"{WIDTH}x{HEIGHT}")
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    x = (screen_width - WIDTH) // 2
+    y = (screen_height - HEIGHT) // 2
+
+    root.geometry(f"{WIDTH}x{HEIGHT}+{x}+{y}") # căn cửa sổ ở giữa màn hình
     root.resizable(False, False)  # khóa chiều ngang và chiều dọc
 
     frame_nhap=Frame(root)
@@ -511,7 +517,16 @@ def main():
     def dateentry_locds_ngaykt_change(event=None):
         dateentry_locds_ngaybd_change()
         return
-    
+
+    def root_exit():
+        xac_nhan=messagebox.askyesnocancel("Xác nhận","Lưu dữ liệu trước khi thoát?")
+        if xac_nhan==None:
+            return
+        if xac_nhan:
+            luu_database(DSdangmuon)
+        root.destroy()
+        return
+        
     entry_hoten.bind("<KeyRelease>", entry_hoten_change)
     entry_lop.bind("<KeyRelease>", entry_lop_change)
     entry_mssv.bind("<KeyRelease>", entry_mssv_change)
@@ -521,6 +536,7 @@ def main():
     combo_tt.bind("<<ComboboxSelected>>", combo_tt_change)
     dateentry_locds_ngaybd.bind("<<DateEntrySelected>>",dateentry_locds_ngaybd_change)
     dateentry_locds_ngaykt.bind("<<DateEntrySelected>>",dateentry_locds_ngaykt_change)
+    root.protocol("WM_DELETE_WINDOW", root_exit)
 
     lblGioBD = Label(frame_nhap_thoigian, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=1, column=0, sticky="w")
