@@ -1,10 +1,10 @@
 import os
 import sqlite3
-from datetime import *
 
 from tkinter import Tk, Frame, Label, Entry, Button, Spinbox, LabelFrame
-from tkinter.ttk import Treeview, Combobox
+from tkinter.ttk import Treeview, Combobox, Scrollbar
 from tkcalendar import DateEntry
+from datetime import *
 
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
 
@@ -126,8 +126,6 @@ def main():
     root=Tk()
     root.title('QUẢN LÝ PHÒNG')
 
-    # root.rowconfigure(3, weight=1)
-    # root.columnconfigure(0, weight=1)
     WIDTH=1000
     HEIGHT=500
     root.geometry(f"{WIDTH}x{HEIGHT}")
@@ -154,7 +152,6 @@ def main():
     label_hoten.grid(row=0, column=0, sticky="w")
     entry_hoten = Entry(frame_nhap_thongtin, width=30)
     entry_hoten.grid(row=0, column=1)
-    # entry_hoten.focus_set()
 
     label_mssv = Label(frame_nhap_thongtin, text="MSSV:")
     label_mssv.grid(row=1, column=0, sticky="w")
@@ -220,27 +217,18 @@ def main():
     treeview_bang.column("mssv",width=int(WIDTH*0.12))
     treeview_bang.column("lop",width=int(WIDTH*0.12))
     treeview_bang.column("sdt",width=int(WIDTH*0.1))
-    treeview_bang.column("thoigian",width=int(WIDTH*0.2))
+    treeview_bang.column("thoigian",width=int(WIDTH*0.18))
     treeview_bang.column("soluong",width=int(WIDTH*0.1))
     treeview_bang.column("trangthai",width=int(WIDTH*0.12))
 
     treeview_bang.grid(row=2,column=0,sticky="nsew")
     hien_thi(DSdangmuon,treeview_bang)
 
-    # def lay_du_lieu_tu_form():
-    #     hoten=entry_hoten.get()
-    #     mssv=entry_mssv.get()
-    #     lop=entry_lop.get()
-    #     sdt=entry_sdt.get()
-    #     ngay=dateentry_ngay.get()
-    #     giobd=spin_giobd.get()+":"+spin_phutbd.get()
-    #     giokt=spin_giokt.get()+":"+spin_phutkt.get()
-    #     soluong=entry_soluong.get()
-    #     dulieu=thong_tin_muon_phong(ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong)
-    #     return dulieu
+    scrollbar_bang = Scrollbar(frame_hienthids, orient="vertical", command=treeview_bang.yview)
+    treeview_bang.configure(yscrollcommand=scrollbar_bang.set)
+    scrollbar_bang.grid(row=2, column=1, sticky="ns")
 
     def button_them_click():
-        # dlform=lay_du_lieu_tu_form()
         giobd=spin_giobd.get()+":"+spin_phutbd.get()
         giokt=spin_giokt.get()+":"+spin_phutkt.get()
         vt=len(DSdangmuon) # xác định vị trí trong danh sách cho phần tử
@@ -255,7 +243,6 @@ def main():
 
     def hien_nut(event=None):
         nonlocal vi_tri_dang_chon
-        # dlform1=lay_du_lieu_tu_form()
         
         if (kt_trung_lich(0)==0) and (entry_hoten.get() and entry_mssv.get() and entry_lop.get() and entry_sdt.get() and entry_soluong.get()):
             button_them.config(state="normal")
@@ -272,7 +259,6 @@ def main():
     
     def kt_trung_lich(dang_sua):
         nonlocal vi_tri_dang_chon
-        # dlform1=lay_du_lieu_tu_form()
         gbd=int(spin_giobd.get())*60+int(spin_phutbd.get())
         gkt=int(spin_giokt.get())*60+int(spin_phutkt.get())
         if gbd>=gkt:
@@ -316,11 +302,10 @@ def main():
         combo_tt.config(state="disable")
         button_sua_tt.config(state="disable")
         vi_tri_dang_chon=None
-        # entry_hoten.focus_set()
         return
 
     vi_tri_dang_chon = None
-    def khi_chon_dong(event):
+    def treeview_bang_selected(event):
         nonlocal vi_tri_dang_chon
         item = treeview_bang.selection()
 
@@ -338,7 +323,6 @@ def main():
         entry_mssv.config(state="normal")
         entry_sdt.config(state="normal")
         entry_soluong.config(state="normal")
-        # button_huy_click()
         vi_tri_dang_chon = vi_tri
 
         entry_hoten.delete(0, "end")
@@ -377,7 +361,7 @@ def main():
         combo_tt.set(ttm.trangthai)
         return
 
-    treeview_bang.bind("<<TreeviewSelect>>", khi_chon_dong)
+    treeview_bang.bind("<<TreeviewSelect>>", treeview_bang_selected)
 
     def button_sua_click():
         nonlocal vi_tri_dang_chon
@@ -392,29 +376,18 @@ def main():
         ttm.lop = entry_lop.get()
         ttm.sdt = entry_sdt.get()
         ttm.soluong = entry_soluong.get()
-
         ttm.ngay = dateentry_ngay.get()
-
-        ttm.giobd = (
-            f"{int(spin_giobd.get()):02d}:"
-            f"{int(spin_phutbd.get()):02d}"
-        )
-
-        ttm.giokt = (
-            f"{int(spin_giokt.get()):02d}:"
-            f"{int(spin_phutkt.get()):02d}"
-        )
+        ttm.giobd = spin_giobd.get()+":"+spin_phutbd.get()
+        ttm.giokt = spin_giokt.get()+":"+spin_phutkt.get()
         
         DSdangmuon[vi_tri_dang_chon]=ttm
-        # Hiển thị lại Treeview
+
         sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,treeview_bang)
-        # hien_nut()
+
         button_them.config(state="disable")
         button_sua.config(state="disable")
         button_luu.config(state="normal")
-        # button_huy_click()
-        vi_tri_dang_chon=None
         return
 
     def button_luu_click():
@@ -601,9 +574,6 @@ def main():
     button_luu.config(state="disable")
     button_sua_tt.config(state="disable")
     button_locds_macdinh.config(state="disable")
-
-    lblThongKe=Label(root,text="TUẦN NÀY: 0 LƯỢT ĐĂNG KÝ | 0 NGƯỜI")
-    lblThongKe.grid(row=4,column=0)
 
     root.mainloop()
 
