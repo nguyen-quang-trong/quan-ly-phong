@@ -9,8 +9,7 @@ from tkcalendar import DateEntry
 FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
 
 class thong_tin_muon_phong:
-    def __init__(self,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,vitritrongds,trangthai="Đã đăng ký",id=None):
-        self.id = id
+    def __init__(self,vitritrongds,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",id=None):
         self.vitritrongds = vitritrongds
         self.ngay = ngay
         self.hoten = hoten
@@ -21,6 +20,7 @@ class thong_tin_muon_phong:
         self.giokt = giokt
         self.soluong = soluong
         self.trangthai = trangthai
+        self.id = id
 
 def tao_database():
     conn = sqlite3.connect(FILE_DATABASE)
@@ -79,7 +79,7 @@ def doc_database():
     ds=[]
     vt=0
     for pt in duLieu:
-        tmp=thong_tin_muon_phong(pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],vt,pt[9])
+        tmp=thong_tin_muon_phong(vt,pt[0],pt[1],pt[2],pt[3],pt[4],pt[5],pt[6],pt[7],pt[8],pt[9])
         ds.append(tmp)
         vt+=1
     
@@ -91,10 +91,11 @@ def hien_thi(DSdangmuon,treeview_bang):
         treeview_bang.delete(item)
 
     stt=1
-    for dong in DSdangmuon:
-        thoigian=dong.ngay+" " +dong.giobd+" - "+dong.giokt
-        treeview_bang.insert("","end",values=(stt,dong.hoten,dong.mssv,dong.lop,dong.sdt,thoigian,dong.soluong,dong.trangthai))
+    for ttmp in DSdangmuon:
+        thoigian=ttmp.ngay+" " +ttmp.giobd+" - "+ttmp.giokt
+        treeview_bang.insert("","end",values=(stt,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,thoigian,ttmp.soluong,ttmp.trangthai))
         stt+=1
+    return
 
 def sap_xep(DSdangmuon):
     for i in range(len(DSdangmuon)-1):
@@ -116,6 +117,7 @@ def sap_xep(DSdangmuon):
                 if gbd>gbd2:
                     DSdangmuon[i],DSdangmuon[j]=DSdangmuon[j],DSdangmuon[i]
                     DSdangmuon[i].vitri,DSdangmuon[j].vitri=DSdangmuon[j].vitri,DSdangmuon[i].vitri
+    return
 
 def main():
     # co_thay_doi=0
@@ -204,11 +206,12 @@ def main():
         giobd=spin_giobd.get()+":"+spin_phutbd.get()
         giokt=spin_giokt.get()+":"+spin_phutkt.get()
         vt=len(DSdangmuon) # xác định vị trí trong danh sách cho phần tử
-        dlform=thong_tin_muon_phong(dateentry_ngay.get(),entry_hoten.get(),entry_mssv.get(),entry_lop.get(),entry_sdt.get(),giobd,giokt,entry_soluong.get(),vt)
+        dlform=thong_tin_muon_phong(vt,dateentry_ngay.get(),entry_hoten.get(),entry_mssv.get(),entry_lop.get(),entry_sdt.get(),giobd,giokt,entry_soluong.get())
         DSdangmuon.append(dlform)
         sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,treeview_bang)
         button_them.config(state="disable")
+        button_sua.config(state="disable")
         button_luu.config(state="normal")
         return
 
@@ -231,11 +234,9 @@ def main():
     
     def kt_trung_lich(dang_sua):
         nonlocal vi_tri_dang_chon
-        dlform1=lay_du_lieu_tu_form()
-        gbd,pbd=dlform1.giobd.split(":")
-        gkt,pkt=dlform1.giokt.split(":")
-        gbd=int(gbd)*60+int(pbd)
-        gkt=int(gkt)*60+int(pkt)
+        # dlform1=lay_du_lieu_tu_form()
+        gbd=int(spin_giobd.get())*60+int(spin_phutbd.get())
+        gkt=int(spin_giokt.get())*60+int(spin_phutkt.get())
         if gbd>=gkt:
             return 1
 
@@ -245,9 +246,9 @@ def main():
             gbd2=int(gbd2)*60+int(pbd2)
             gkt2=int(gkt2)*60+int(pkt2)
             if(dang_sua==1):
-                if int(vi_tri_dang_chon)==int(ttmp.vitri):
+                if int(vi_tri_dang_chon)==int(ttmp.vitritrongds):
                     continue
-            if dlform1.ngay==ttmp.ngay:
+            if dateentry_ngay.get()==ttmp.ngay:
                 if gbd<gkt2 and gbd2<gkt:
                     return 1
 
@@ -353,9 +354,11 @@ def main():
         # Hiển thị lại Treeview
         sap_xep(DSdangmuon)
         hien_thi(DSdangmuon,treeview_bang)
-        hien_nut()
+        # hien_nut()
+        button_them.config(state="disable")
+        button_sua.config(state="disable")
         button_luu.config(state="normal")
-        button_huy_click()
+        # button_huy_click()
         vi_tri_dang_chon=None
 
     def button_luu_click():
