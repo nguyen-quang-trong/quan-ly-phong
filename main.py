@@ -143,6 +143,8 @@ def main():
     frame_hienthids.grid(row=3,column=0,sticky="nsew")
     frame_hienthids.rowconfigure(1, weight=1)
     frame_hienthids.columnconfigure(0, weight=1)
+    frame_locds=Frame(frame_hienthids)
+    frame_locds.grid(row=1,column=0,sticky="w")
 
     label_hoten = Label(frame_nhap_thongtin, text="Họ và tên:")
     label_hoten.grid(row=0, column=0, sticky="w")
@@ -184,6 +186,17 @@ def main():
     label_danhsach=Label(frame_hienthids,text="DANH SÁCH MƯỢN PHÒNG")
     label_danhsach.grid(row=0,column=0)
 
+    label_locds=Label(frame_locds,text="Lọc danh sách:")
+    label_locds.grid(row=0,column=0,sticky="w")
+    dateentry_locds_ngaybd = DateEntry(frame_locds,width=12,date_pattern="dd/mm/yyyy")
+    dateentry_locds_ngaybd.grid(row=0, column=1, sticky="w")
+    dateentry_locds_ngaybd.delete(0, "end")
+    label_locds=Label(frame_locds,text="->")
+    label_locds.grid(row=0,column=2,sticky="w")
+    dateentry_locds_ngaykt = DateEntry(frame_locds,width=12,date_pattern="dd/mm/yyyy")
+    dateentry_locds_ngaykt.grid(row=0, column=3, sticky="w")
+    dateentry_locds_ngaykt.delete(0, "end")
+
     treeview_bang = Treeview(frame_hienthids,columns=("stt","hoten","mssv","lop","sdt","thoigian","soluong","trangthai"),show="headings")
 
     treeview_bang.heading("stt", text="STT")
@@ -195,7 +208,7 @@ def main():
     treeview_bang.heading("soluong", text="Số lượng")
     treeview_bang.heading("trangthai", text="Trạng thái")
 
-    treeview_bang.grid(row=1,column=0,sticky="nsew")
+    treeview_bang.grid(row=2,column=0,sticky="nsew")
     hien_thi(DSdangmuon,treeview_bang)
 
     # def lay_du_lieu_tu_form():
@@ -477,6 +490,30 @@ def main():
     def combo_tt_change(event=None):
         button_sua_tt.config(state="normal")
         return
+
+    def dateentry_locds_ngaybd_change(event=None):
+        if not dateentry_locds_ngaykt.get():
+            return
+        
+        DSdangmuon_loc=[]
+        soluongdk=0
+        ngaybd=datetime.strptime(dateentry_locds_ngaybd.get(), "%d/%m/%Y").date()
+        ngaykt=datetime.strptime(dateentry_locds_ngaykt.get(), "%d/%m/%Y").date()
+        for ttmp in DSdangmuon:
+            ngaymuon=datetime.strptime(ttmp.ngay, "%d/%m/%Y").date()
+            if ngaybd<=ngaymuon and ngaymuon<=ngaykt:
+                DSdangmuon_loc.append(ttmp)
+                soluongdk+=int(ttmp.soluong)
+
+        hien_thi(DSdangmuon_loc,treeview_bang)
+        soluotdk=len(DSdangmuon_loc)
+        label_thongke=Label(frame_locds,text=str(soluotdk)+" lượt đăng ký | "+str(soluongdk)+" số lượng sinh viên đăng ký")
+        label_thongke.grid(row=1,column=0,columnspan=4,sticky="w")
+        return
+
+    def dateentry_locds_ngaykt_change(event=None):
+        dateentry_locds_ngaybd_change()
+        return
     
     entry_hoten.bind("<KeyRelease>", entry_hoten_change)
     entry_lop.bind("<KeyRelease>", entry_lop_change)
@@ -485,6 +522,8 @@ def main():
     entry_soluong.bind("<KeyRelease>", entry_soluong_change)
     dateentry_ngay.bind("<<DateEntrySelected>>", dateentry_ngay_change)
     combo_tt.bind("<<ComboboxSelected>>", combo_tt_change)
+    dateentry_locds_ngaybd.bind("<<DateEntrySelected>>",dateentry_locds_ngaybd_change)
+    dateentry_locds_ngaykt.bind("<<DateEntrySelected>>",dateentry_locds_ngaykt_change)
 
     lblGioBD = Label(frame_nhap_thoigian, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=1, column=0, sticky="w")
