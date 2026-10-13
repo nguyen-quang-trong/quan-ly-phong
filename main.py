@@ -47,9 +47,9 @@ def tao_database():
 
 def luu_database(DSdangmuon):
     conn = sqlite3.connect(FILE_DATABASE)
-    cursor=conn.cursor()
 
     for ttmp in DSdangmuon:
+        cursor=conn.cursor()
         if ttmp.id==None:
             cursor.execute("""
                 INSERT INTO thong_tin_muon_phong
@@ -62,8 +62,8 @@ def luu_database(DSdangmuon):
                 SET ngay=?,hoten=?,mssv=?,lop=?,sdt=?,giobd=?,giokt=?,soluong=?,trangthai=?
                 WHERE id=?
             """,(ttmp.ngay,ttmp.hoten,ttmp.mssv,ttmp.lop,ttmp.sdt,ttmp.giobd,ttmp.giokt,ttmp.soluong,ttmp.trangthai,ttmp.id))
+        conn.commit()
 
-    conn.commit()
     conn.close()
     return
 
