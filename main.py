@@ -445,19 +445,19 @@ def main():
                 button_sua.config(state="disable")
         return
 
-    def spin_giobd_change():
+    def spin_giobd_change(event=None):
         dateentry_ngay_change()
         return
     
-    def spin_phutbd_change():
+    def spin_phutbd_change(event=None):
         dateentry_ngay_change()
         return
     
-    def spin_giokt_change():
+    def spin_giokt_change(event=None):
         dateentry_ngay_change()
         return
     
-    def spin_phutkt_change():
+    def spin_phutkt_change(event=None):
         dateentry_ngay_change()
         return
 
@@ -533,6 +533,7 @@ def main():
     entry_sdt.bind("<KeyRelease>", entry_sdt_change)
     entry_soluong.bind("<KeyRelease>", entry_soluong_change)
     dateentry_ngay.bind("<<DateEntrySelected>>", dateentry_ngay_change)
+    dateentry_ngay.bind("<KeyRelease>", dateentry_ngay_change)
     combo_tt.bind("<<ComboboxSelected>>", combo_tt_change)
     dateentry_locds_ngaybd.bind("<<DateEntrySelected>>",dateentry_locds_ngaybd_change)
     dateentry_locds_ngaykt.bind("<<DateEntrySelected>>",dateentry_locds_ngaykt_change)
@@ -541,22 +542,26 @@ def main():
     lblGioBD = Label(frame_nhap_thoigian, text="Bắt đầu:",width=8)
     lblGioBD.grid(row=1, column=0, sticky="w")
     spin_giobd = Spinbox(frame_nhap_thoigian,from_=7,to=20,width=3,format="%02.0f",command=spin_giobd_change)
+    spin_giobd.bind("<KeyRelease>",spin_giobd_change)
     spin_giobd.grid(row=1, column=1, sticky="w")
     spin_giobd.delete(0, "end")
     lblHaiChamBD = Label(frame_nhap_thoigian, text=":")
     lblHaiChamBD.grid(row=1, column=2)
     spin_phutbd = Spinbox(frame_nhap_thoigian,from_=0,to=59,width=3,format="%02.0f",command=spin_phutbd_change)
+    spin_phutbd.bind("<KeyRelease>",spin_phutbd_change)
     spin_phutbd.grid(row=1, column=3, sticky="w")
     spin_phutbd.delete(0, "end")
 
     lblGioKT = Label(frame_nhap_thoigian, text="Kết thúc:")
     lblGioKT.grid(row=2, column=0, sticky="w")
-    spin_giokt = Spinbox(frame_nhap_thoigian,from_=8,to=20,width=3,format="%02.0f",command=spin_giokt_change)
+    spin_giokt = Spinbox(frame_nhap_thoigian,from_=7,to=20,width=3,format="%02.0f",command=spin_giokt_change)
+    spin_giokt.bind("<KeyRelease>",spin_giokt_change)
     spin_giokt.grid(row=2, column=1, sticky="w")
     spin_giokt.delete(0, "end")
     lblHaiChamKT = Label(frame_nhap_thoigian, text=":")
     lblHaiChamKT.grid(row=2, column=2)
     spin_phutkt = Spinbox(frame_nhap_thoigian,from_=0,to=59,width=3,format="%02.0f",command=spin_phutkt_change)
+    spin_phutkt.bind("<KeyRelease>",spin_phutkt_change)
     spin_phutkt.grid(row=2, column=3, sticky="w")
     spin_phutkt.delete(0, "end")
 
