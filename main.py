@@ -120,6 +120,7 @@ def sap_xep(DSdangmuon):
     return
 
 def main():
+    da_luu=True
     DSdangmuon=doc_database()
     sap_xep(DSdangmuon)
     root=Tk()
@@ -234,6 +235,7 @@ def main():
     scrollbar_bang.grid(row=2, column=1, sticky="ns")
 
     def button_them_click():
+        nonlocal da_luu
         giobd=spin_giobd.get()+":"+spin_phutbd.get()
         giokt=spin_giokt.get()+":"+spin_phutkt.get()
         vt=len(DSdangmuon) # xác định vị trí trong danh sách cho phần tử
@@ -244,6 +246,7 @@ def main():
         button_them.config(state="disable")
         button_sua.config(state="disable")
         button_luu.config(state="normal")
+        da_luu=False
         return
 
     def hien_nut(event=None):
@@ -369,6 +372,7 @@ def main():
     treeview_bang.bind("<<TreeviewSelect>>", treeview_bang_selected)
 
     def button_sua_click():
+        nonlocal da_luu
         nonlocal vi_tri_dang_chon
         if vi_tri_dang_chon == None:
             return
@@ -393,18 +397,23 @@ def main():
         button_them.config(state="disable")
         button_sua.config(state="disable")
         button_luu.config(state="normal")
+        da_luu=False
         return
 
     def button_luu_click():
+        nonlocal da_luu
         luu_database(DSdangmuon)
         button_luu.config(state="disable")
+        da_luu=True
         return
 
     def button_sua_tt_click():
+        nonlocal da_luu
         nonlocal vi_tri_dang_chon
         DSdangmuon[vi_tri_dang_chon].trangthai=combo_tt.get()
         button_sua_tt.config(state="disable")
         button_luu.config(state="normal")
+        da_luu=False
         hien_thi(DSdangmuon,treeview_bang)
         return
 
@@ -519,11 +528,17 @@ def main():
         return
 
     def root_exit():
-        xac_nhan=messagebox.askyesnocancel("Xác nhận","Lưu dữ liệu trước khi thoát?")
-        if xac_nhan==None:
-            return
-        if xac_nhan:
-            luu_database(DSdangmuon)
+        nonlocal da_luu
+        if da_luu==False:
+            xac_nhan=messagebox.askyesnocancel("Xác nhận","Lưu dữ liệu trước khi thoát?")
+            if xac_nhan==None:
+                return
+            if xac_nhan:
+                luu_database(DSdangmuon)
+        else:
+            xac_nhan=messagebox.askokcancel("Xác nhận","Bạn thực sự muốn thoát?")
+            if xac_nhan==False:
+                return
         root.destroy()
         return
         
