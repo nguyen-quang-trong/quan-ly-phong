@@ -6,7 +6,7 @@ from tkinter.ttk import Treeview, Combobox, Scrollbar
 from tkcalendar import DateEntry
 from datetime import *
 
-FILE_DATABASE=os.path.join(os.path.dirname(__file__), "data.db")
+FILE_DATABASE=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
 
 class thong_tin_muon_phong:
     def __init__(self,vitritrongds,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",id=None):
