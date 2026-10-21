@@ -22,27 +22,60 @@ class thong_tin_muon_phong:
         self.trangthai = trangthai
         self.id = id
 
+# def tao_database():
+#     conn = sqlite3.connect(FILE_DATABASE)
+#     cursor=conn.cursor()
+
+#     cursor.execute("""
+#         CREATE TABLE IF NOT EXISTS thong_tin_muon_phong(
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             ngay TEXT NOT NULL,
+#             hoten TEXT NOT NULL,
+#             mssv TEXT NOT NULL,
+#             lop TEXT NOT NULL,
+#             sdt TEXT NOT NULL,
+#             giobd TEXT NOT NULL,
+#             giokt TEXT NOT NULL,
+#             soluong TEXT NOT NULL,
+#             trangthai TEXT NOT NULL
+#         )
+#     """)
+
+#     conn.commit()
+#     conn.close()
+#     messagebox.showinfo("Thông báo","Đã tạo thành công")
+#     return
+
 def tao_database():
-    conn = sqlite3.connect(FILE_DATABASE)
-    cursor=conn.cursor()
+    conn = None
+    try:
+        conn = sqlite3.connect(FILE_DATABASE)
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS thong_tin_muon_phong(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ngay TEXT NOT NULL,
-            hoten TEXT NOT NULL,
-            mssv TEXT NOT NULL,
-            lop TEXT NOT NULL,
-            sdt TEXT NOT NULL,
-            giobd TEXT NOT NULL,
-            giokt TEXT NOT NULL,
-            soluong INTEGER NOT NULL,
-            trangthai TEXT NOT NULL
-        )
-    """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS thong_tin_muon_phong(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ngay TEXT NOT NULL,
+                hoten TEXT NOT NULL,
+                mssv TEXT NOT NULL,
+                lop TEXT NOT NULL,
+                sdt TEXT NOT NULL,
+                giobd TEXT NOT NULL,
+                giokt TEXT NOT NULL,
+                soluong TEXT NOT NULL,
+                trangthai TEXT NOT NULL
+            )
+        """)
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        messagebox.showinfo("Thông báo", "Đã tạo thành công")
+
+    except sqlite3.Error as e:
+        messagebox.showerror("Lỗi", f"Không thể tạo database/bảng:\n{e}")
+
+    finally:
+        if conn is not None:
+            conn.close()
     return
 
 def luu_database(DSdangmuon):
