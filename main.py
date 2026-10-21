@@ -68,7 +68,7 @@ def tao_database():
         """)
 
         conn.commit()
-        messagebox.showinfo("Thông báo", f"Đã tạo database/bảng thành công.\nVị trí file:\n{FILE_DATABASE})
+        messagebox.showinfo("Thông báo", f"Đã tạo database/bảng thành công.\nVị trí file:\n{FILE_DATABASE}")
 
     except sqlite3.Error as e:
         messagebox.showerror("Lỗi", f"Không thể tạo database/bảng:\n{e}")
