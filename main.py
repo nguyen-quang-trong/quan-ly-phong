@@ -6,7 +6,8 @@ from tkinter.ttk import Treeview, Combobox, Scrollbar
 from tkcalendar import DateEntry
 from datetime import *
 
-FILE_DATABASE=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
+# FILE_DATABASE=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
+FILE_DATEBASE="data.db"
 
 class thong_tin_muon_phong:
     def __init__(self,vitritrongds,ngay,hoten,mssv,lop,sdt,giobd,giokt,soluong,trangthai="Đã đăng ký",id=None):
@@ -68,7 +69,8 @@ def tao_database():
         """)
 
         conn.commit()
-        messagebox.showinfo("Thông báo", f"Đã tạo database/bảng thành công.\nVị trí file:\n{FILE_DATABASE}")
+        duong_dan=os.path.join(os.path.dirname(__file__), FILE_DATABASE)
+        messagebox.showinfo("Thông báo", f"Đã tạo database/bảng thành công.\nVị trí file:\n{duong_dan}")
 
     except sqlite3.Error as e:
         messagebox.showerror("Lỗi", f"Không thể tạo database/bảng:\n{e}")
