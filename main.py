@@ -402,7 +402,11 @@ def main():
 
     def button_luu_click():
         nonlocal da_luu
+        nonlocal DSdangmuon
         luu_database(DSdangmuon)
+        DSdangmuon=doc_database()
+        sap_xep(DSdangmuon)
+        # hien_thi(DSdangmuon,treeview_bang)
         button_luu.config(state="disable")
         da_luu=True
         return
